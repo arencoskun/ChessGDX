@@ -3,6 +3,7 @@ package me.aren.chessgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -10,15 +11,22 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import me.aren.chessgdx.ChessGdx;
 import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
+import me.aren.chessgdx.obj.pieces.Pawn;
 
 public class PlayScreen implements Screen {
 	SpriteBatch sb;
+	OrthographicCamera cam;
 	Board board;
 	BitmapFont font = new BitmapFont();
 	
 	public PlayScreen(ChessGdx game) {
 		sb = game.sb;
 		board = new Board(sb);
+		cam = new OrthographicCamera(768, 768);
+		cam.setToOrtho(false);
+		
+		board.tiles[2][2].addPiece(new Pawn(sb, cam, board, true));
+		board.tiles[3][2].addPiece(new Pawn(sb, cam, board, false));
 	}
 	
 	@Override
@@ -36,6 +44,8 @@ public class PlayScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		update(delta);
+		//cam.update();
+		//sb.setTransformMatrix(cam.combined);
 		ScreenUtils.clear(0, 0, 0, 1);
 		sb.begin();
 		board.render(delta);

@@ -5,16 +5,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import me.aren.chessgdx.GlobalSettings;
+import me.aren.chessgdx.obj.interfaces.IGameObject;
 
-public class Board implements GameObject {
+public class Board implements IGameObject {
 	
 	final int TILE_WIDTH = 96, TILE_HEIGHT = 96;
 	final int BOARD_WIDTH = TILE_WIDTH * 8, BOARD_HEIGHT = TILE_HEIGHT * 8;
-	Tile[][] tiles = new Tile[8][8];
+	// TODO: This should not be public - public only for testing purposes
+	public Tile[][] tiles = new Tile[8][8];
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
 	
-	private Vector2 findIndexOfTile(Tile tileToSearch) {	
+	public Vector2 findIndexOfTile(Tile tileToSearch) {	
 		for(int y = 0; y < 8; y++) {
 			Tile[] tilesY = tiles[y];
 			
@@ -26,8 +28,6 @@ public class Board implements GameObject {
 		}
 		
 		return new Vector2(-1, -1);
-		
-		
 	}
 	
 	public Board(SpriteBatch sb) {
@@ -55,6 +55,7 @@ public class Board implements GameObject {
 				
 				if(GlobalSettings.debugModeEnabled) {
 					Vector2 tilePos = findIndexOfTile(tile);
+					if(tilePos == new Vector2(-1, -1)) break;
 					String position = "(" + tilePos.x + "," + tilePos.y + ")";
 					
 					font.draw(sb, position, tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT);
