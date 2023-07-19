@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import me.aren.chessgdx.ChessGdx;
 import me.aren.chessgdx.GlobalSettings;
-import obj.Board;
+import me.aren.chessgdx.obj.Board;
 
 public class PlayScreen implements Screen {
 	SpriteBatch sb;

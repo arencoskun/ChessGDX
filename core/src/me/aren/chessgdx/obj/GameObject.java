@@ -1,4 +1,4 @@
-package obj;
+package me.aren.chessgdx.obj;
 
 interface GameObject {
 	public void update(float delta);

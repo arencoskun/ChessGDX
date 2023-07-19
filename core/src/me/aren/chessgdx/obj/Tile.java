@@ -1,4 +1,4 @@
-package obj;
+package me.aren.chessgdx.obj;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
