@@ -13,6 +13,7 @@ public class Board implements IGameObject {
 	final int BOARD_WIDTH = TILE_WIDTH * 8, BOARD_HEIGHT = TILE_HEIGHT * 8;
 	// TODO: This should not be public - public only for testing purposes
 	public Tile[][] tiles = new Tile[8][8];
+	public boolean turnWhite = true;
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
 	
