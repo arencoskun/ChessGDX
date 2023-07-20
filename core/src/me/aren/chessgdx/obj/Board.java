@@ -36,7 +36,7 @@ public class Board implements IGameObject {
 		for(int x = 0; x < 768; x += 96) {
 			for(int y = 768 - 96; y >= 0; y -= 96) {
 				tiles[((BOARD_HEIGHT - TILE_HEIGHT) - y) / TILE_HEIGHT][x / TILE_WIDTH] = 
-						new Tile(sb, (x / TILE_WIDTH + ((BOARD_HEIGHT - TILE_HEIGHT) - y) / TILE_HEIGHT) % 2 != 0, new Vector2(x, y));
+						new Tile((x / TILE_WIDTH + ((BOARD_HEIGHT - TILE_HEIGHT) - y) / TILE_HEIGHT) % 2 != 0, new Vector2(x, y));
 			}
 		}
 	}
@@ -59,9 +59,23 @@ public class Board implements IGameObject {
 					String position = "(" + tilePos.x + "," + tilePos.y + ")";
 					
 					font.draw(sb, position, tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT);
+					
+					font.draw(sb, String.valueOf(tile.isGreen()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 15);
+					
+					if(tile.piece != null) font.draw(sb, String.valueOf(tile.piece.isSelected()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 30);
 				}
 			}
 		}
+	}
+
+	@Override
+	public void dispose() {
+		for(Tile[] tileArr : tiles) {
+			for(Tile tile : tileArr) {
+				tile.dispose();
+			}
+		}
+		
 	}
 
 }

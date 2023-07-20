@@ -8,7 +8,7 @@ import me.aren.chessgdx.ChessGdx;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setForegroundFPS(60);
+		config.setForegroundFPS(30);
 		config.setResizable(false);
 		config.setWindowedMode(768, 768);
 		config.setTitle("ChessGDX");

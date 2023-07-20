@@ -11,6 +11,7 @@ public interface IPiece extends IGameObject {
 	public void setParent(Tile tile);
 	public Tile getParent();
 	public boolean isSelected();
+	public void setSelected(boolean selected);
 	// TODO: Maybe this should not be a LinkedList??
 	public LinkedList<Tile> getValidPositions();
 }
