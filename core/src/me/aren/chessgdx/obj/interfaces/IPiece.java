@@ -31,7 +31,7 @@ public interface IPiece extends IGameObject {
 			    	if(GlobalSettings.debugModeEnabled) {
 			        	Gdx.app.log("DEBUG", isWhite() ? "White " + getName() + " selected at " + "X: " + getParent().getPos().x / 96 + " Y: " + (7 - getParent().getPos().y / 96) 
 			        			: "Black " + getName() + " selected at " + "X: " + getParent().getPos().x / 96 + " Y: " + (7 - getParent().getPos().y / 96));
-			        	String positionsToPrint = "This  can move to these positions: ";
+			        	String positionsToPrint = "This " + getName() + " can move to these positions: ";
 			        	
 			        	for(Tile validTile : getValidPositions()) {
 			        		positionsToPrint += "\nX: " + board.findIndexOfTile(validTile).x + " Y: " + board.findIndexOfTile(validTile).y;
@@ -43,11 +43,9 @@ public interface IPiece extends IGameObject {
 			    	
 			        getParent().setGreen(true);
 			        
-			        if(!didJustMove()) {
-				        for(Tile tile : getValidPositions()) {
-				        	tile.setGreen(true);
-				        }
-				    }
+			        for(Tile tile : getValidPositions()) {
+			        	tile.setGreen(true);
+			        }
 			        
 			        
 			        
@@ -58,7 +56,8 @@ public interface IPiece extends IGameObject {
 			    			getParent().setGreen(false);
 			    			getParent().removePiece();
 			    			tile.addPiece(this);
-			    			board.turnWhite = !board.turnWhite;
+			    			afterMove();
+			    			board.setTurn(!board.getTurn());
 			    			if(GlobalSettings.debugModeEnabled) {
 			    				Gdx.app.log("DEBUG", "-------- Turn: " + (board.turnWhite ? " WHITE " : "BLACK ") + "--------");
 			    			}
@@ -84,7 +83,7 @@ public interface IPiece extends IGameObject {
 	public boolean validPositionsCalculated();
 	public void setValidPositionsCalculated(boolean calculated);
 	public boolean isWhite();
-	public boolean didJustMove();
 	public void calculateValidPositions(Board board);
+	public void afterMove();
 	public LinkedBlockingQueue<Tile> getValidPositions();
 }

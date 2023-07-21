@@ -22,9 +22,10 @@ public class Pawn implements IPiece {
 	boolean selected = false;
 	boolean calculatedValidPositions = false;
 	boolean white;
-	boolean justMoved = false;
+	//boolean justMoved = false;
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
+	boolean hasMoved = false;
 	
 	
 	public Pawn(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
@@ -54,6 +55,14 @@ public class Pawn implements IPiece {
 		
 		if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
 			getValidPositions().add(board.tiles[y][x]);
+		
+		if(!hasMoved) {
+			if(white) {
+				getValidPositions().add(board.tiles[y - 1][x]);
+			} else {
+				getValidPositions().add(board.tiles[y + 1][x]);
+			}
+		}
 		
 		setValidPositionsCalculated(true);
 		//}
@@ -128,15 +137,15 @@ public class Pawn implements IPiece {
 	}
 
 	@Override
-	public boolean didJustMove() {
-		// TODO Auto-generated method stub
-		return justMoved;
-	}
-
-	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return "pawn";
+	}
+
+	@Override
+	public void afterMove() {
+		// TODO Auto-generated method stub
+		if(!hasMoved) hasMoved = true;
 	}
 
 }

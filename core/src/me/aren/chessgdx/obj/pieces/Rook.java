@@ -84,7 +84,7 @@ public class Rook implements IPiece {
 		/*if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
 			getValidPositions().add(board.tiles[y][x]);
 		*/
-		setValidPositionsCalculated(true);
+		//setValidPositionsCalculated(true);
 		//}
 	}
 
@@ -155,17 +155,18 @@ public class Rook implements IPiece {
 		return white;
 	}
 
-	@Override
-	public boolean didJustMove() {
-		// TODO Auto-generated method stub
-		return justMoved;
-	}
-
 
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return "rook";
+	}
+
+
+	@Override
+	public void afterMove() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

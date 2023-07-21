@@ -3,6 +3,7 @@ package me.aren.chessgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,19 +19,28 @@ public class PlayScreen implements Screen {
 	SpriteBatch sb;
 	OrthographicCamera cam;
 	Board board;
-	BitmapFont font = new BitmapFont();
+	BitmapFont font;
 	
 	public PlayScreen(ChessGdx game) {
 		sb = game.sb;
 		board = new Board(sb);
 		cam = new OrthographicCamera(768, 768);
-		cam.setToOrtho(false);
+		font = new BitmapFont();
 		
-		board.tiles[2][2].addPiece(new Pawn(sb, cam, board, false));
-		board.tiles[3][2].addPiece(new Pawn(sb, cam, board, true));
-		board.tiles[1][4].addPiece(new Pawn(sb, cam, board, false));
-		board.tiles[1][7].addPiece(new Pawn(sb, cam, board, true));
-		board.tiles[4][4].addPiece(new Rook(sb, cam, board, true));
+		cam.setToOrtho(false);
+		font.setColor(Color.YELLOW);
+		
+		board.tiles[7][7].addPiece(new Rook(sb, cam, board, true));
+		board.tiles[7][0].addPiece(new Rook(sb, cam, board, true));
+		for(int i = 0; i < 8; i++) {
+			board.tiles[6][i].addPiece(new Pawn(sb, cam, board, true));
+		}
+		
+		board.tiles[0][7].addPiece(new Rook(sb, cam, board, false));
+		board.tiles[0][0].addPiece(new Rook(sb, cam, board, false));
+		for(int i = 0; i < 8; i++) {
+			board.tiles[1][i].addPiece(new Pawn(sb, cam, board, false));
+		}
 	}
 	
 	@Override

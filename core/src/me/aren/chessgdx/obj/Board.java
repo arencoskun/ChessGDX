@@ -14,6 +14,7 @@ public class Board implements IGameObject {
 	// TODO: This should not be public - public only for testing purposes
 	public Tile[][] tiles = new Tile[8][8];
 	public boolean turnWhite = true;
+	public int turnCounter = 0;
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
 	
@@ -64,6 +65,8 @@ public class Board implements IGameObject {
 					font.draw(sb, String.valueOf(tile.isGreen()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 15);
 					
 					if(tile.piece != null) font.draw(sb, String.valueOf(tile.piece.isSelected()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 30);
+					font.draw(sb, "Turn: " + (getTurn() ? "White" : "Black"), 550, 50);
+					font.draw(sb, "Turn count: " + getTurnCount(), 650, 50);
 				}
 			}
 		}
@@ -77,6 +80,20 @@ public class Board implements IGameObject {
 			}
 		}
 		
+	}
+	
+	public void setTurn(boolean white) {
+		turnWhite = white;
+		turnCounter++;
+	}
+	
+	public boolean getTurn() {
+		return turnWhite;
+	}
+	
+	public int getTurnCount() {
+		// TODO Auto-generated method stub
+		return turnCounter;
 	}
 
 }
