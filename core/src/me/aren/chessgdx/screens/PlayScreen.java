@@ -3,7 +3,6 @@ package me.aren.chessgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,6 +12,7 @@ import me.aren.chessgdx.ChessGdx;
 import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.pieces.Pawn;
+import me.aren.chessgdx.obj.pieces.Rook;
 
 public class PlayScreen implements Screen {
 	SpriteBatch sb;
@@ -30,6 +30,7 @@ public class PlayScreen implements Screen {
 		board.tiles[3][2].addPiece(new Pawn(sb, cam, board, true));
 		board.tiles[1][4].addPiece(new Pawn(sb, cam, board, false));
 		board.tiles[1][7].addPiece(new Pawn(sb, cam, board, true));
+		board.tiles[4][4].addPiece(new Rook(sb, cam, board, true));
 	}
 	
 	@Override

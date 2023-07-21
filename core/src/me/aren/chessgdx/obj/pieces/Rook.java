@@ -11,11 +11,11 @@ import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
 
-public class Pawn implements IPiece {
+public class Rook implements IPiece {
 	
-	final String PAWN_PATH_WHITE = "pawn_white.png";
-	final String PAWN_PATH_BLACK = "pawn_black.png";
-	Texture pawnTexture;
+	final String ROOK_PATH_WHITE = "rook_white.png";
+	final String ROOK_PATH_BLACK = "rook_black.png";
+	Texture rookTexture;
 	public Tile parent;
 	SpriteBatch sb;
 	OrthographicCamera cam;
@@ -27,7 +27,7 @@ public class Pawn implements IPiece {
 	LinkedBlockingQueue<Tile> validPositions;
 	
 	
-	public Pawn(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
+	public Rook(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
 		// TODO Auto-generated constructor stub
 		this.sb = sb;
 		this.cam = cam;
@@ -36,9 +36,10 @@ public class Pawn implements IPiece {
 		
 		validPositions = new LinkedBlockingQueue<Tile>();
 		
-		pawnTexture = new Texture(white ? Gdx.files.internal(PAWN_PATH_WHITE) : Gdx.files.internal(PAWN_PATH_BLACK));
+		rookTexture = new Texture(white ? Gdx.files.internal(ROOK_PATH_WHITE) : Gdx.files.internal(ROOK_PATH_BLACK));
 	}
-	
+
+
 	@Override
 	public void calculateValidPositions(Board board) {
 		// TODO Auto-generated method stub
@@ -48,13 +49,41 @@ public class Pawn implements IPiece {
 				getValidPositions().remove(tile);
 			}
 		}
-			
-		int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
-		int x = (int) board.findIndexOfTile(parent).x;
 		
-		if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
+		//int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
+		//int x = (int) board.findIndexOfTile(parent).x;
+		
+		if(board.findIndexOfTile(getParent()).x != 7) {
+			for(int x1 = (int) board.findIndexOfTile(getParent()).x; x1 < 8; x1++) {
+				if(board.tiles[(int) board.findIndexOfTile(getParent()).y][x1] != getParent() &&
+						board.tiles[(int) board.findIndexOfTile(getParent()).y][x1].doesHavePiece()) break;
+				getValidPositions().add(board.tiles[(int) board.findIndexOfTile(getParent()).y][x1]);
+			}
+		}
+		
+		if(board.findIndexOfTile(getParent()).x != 0) {
+			for(int x2 = (int) board.findIndexOfTile(getParent()).x; x2 > -1; x2--) {
+				if(board.tiles[(int) board.findIndexOfTile(getParent()).y][x2] != getParent() &&
+						board.tiles[(int) board.findIndexOfTile(getParent()).y][x2].doesHavePiece()) break;
+				getValidPositions().add(board.tiles[(int) board.findIndexOfTile(getParent()).y][x2]);
+			}
+		}
+		
+		for(int y1 = (int) board.findIndexOfTile(getParent()).y; y1 < 8; y1++) {
+			if(board.tiles[y1][(int) board.findIndexOfTile(getParent()).x] != getParent() &&
+					board.tiles[y1][(int) board.findIndexOfTile(getParent()).x].doesHavePiece()) break;
+			getValidPositions().add(board.tiles[y1][(int) board.findIndexOfTile(getParent()).x]);
+		}
+	
+		for(int y2 = (int) board.findIndexOfTile(getParent()).y; y2 > -1; y2--) {
+			if(board.tiles[y2][(int) board.findIndexOfTile(getParent()).x] != getParent() &&
+					board.tiles[y2][(int) board.findIndexOfTile(getParent()).x].doesHavePiece()) break;
+			getValidPositions().add(board.tiles[y2][(int) board.findIndexOfTile(getParent()).x]);
+		}
+		
+		/*if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
 			getValidPositions().add(board.tiles[y][x]);
-		
+		*/
 		setValidPositionsCalculated(true);
 		//}
 	}
@@ -63,7 +92,7 @@ public class Pawn implements IPiece {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		update(delta, board, cam);
-		sb.draw(pawnTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
+		sb.draw(rookTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
 	}
 
 	@Override
@@ -98,7 +127,6 @@ public class Pawn implements IPiece {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -133,10 +161,12 @@ public class Pawn implements IPiece {
 		return justMoved;
 	}
 
+
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "pawn";
+		return "rook";
 	}
+	
 
 }

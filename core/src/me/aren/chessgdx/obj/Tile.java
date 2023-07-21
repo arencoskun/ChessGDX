@@ -35,7 +35,6 @@ public class Tile implements IGameObject {
 
 	@Override
 	public void render(float delta) {
-		// TODO: This whole loop is awful
 		update(delta);
 		tileSb.begin();
 		
@@ -97,5 +96,9 @@ public class Tile implements IGameObject {
 		}
 		
 		this.green = green;
+	}
+	
+	public boolean doesHavePiece() {
+		return piece != null;
 	}
 }
