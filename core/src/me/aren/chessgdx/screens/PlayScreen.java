@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import me.aren.chessgdx.ChessGdx;
 import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
+import me.aren.chessgdx.obj.pieces.Bishop;
 import me.aren.chessgdx.obj.pieces.Pawn;
 import me.aren.chessgdx.obj.pieces.Rook;
 
@@ -41,6 +42,8 @@ public class PlayScreen implements Screen {
 		for(int i = 0; i < 8; i++) {
 			board.tiles[1][i].addPiece(new Pawn(sb, cam, board, false));
 		}
+		
+		board.tiles[2][3].addPiece(new Bishop(sb, cam, board, true));
 	}
 	
 	@Override

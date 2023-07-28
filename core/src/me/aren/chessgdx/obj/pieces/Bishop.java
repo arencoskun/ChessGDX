@@ -11,11 +11,10 @@ import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
 
-public class Rook implements IPiece {
-	
-	final String ROOK_PATH_WHITE = "rook_white.png";
-	final String ROOK_PATH_BLACK = "rook_black.png";
-	Texture rookTexture;
+public class Bishop implements IPiece {
+	final String BISHOP_PATH_WHITE = "bishop_white.png";
+	final String BISHOP_PATH_BLACK = "bishop_black.png";
+	Texture bishopTexture;
 	public Tile parent;
 	SpriteBatch sb;
 	OrthographicCamera cam;
@@ -26,8 +25,7 @@ public class Rook implements IPiece {
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
 	
-	
-	public Rook(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
+	public Bishop(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
 		// TODO Auto-generated constructor stub
 		this.sb = sb;
 		this.cam = cam;
@@ -36,9 +34,9 @@ public class Rook implements IPiece {
 		
 		validPositions = new LinkedBlockingQueue<Tile>();
 		
-		rookTexture = new Texture(white ? Gdx.files.internal(ROOK_PATH_WHITE) : Gdx.files.internal(ROOK_PATH_BLACK));
+		bishopTexture = new Texture(white ? Gdx.files.internal(BISHOP_PATH_WHITE) : Gdx.files.internal(BISHOP_PATH_BLACK));
 	}
-
+	
 
 	@Override
 	public void calculateValidPositions(Board board) {
@@ -50,51 +48,43 @@ public class Rook implements IPiece {
 			}
 		}
 		
-		//int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
-		//int x = (int) board.findIndexOfTile(parent).x;
+		//System.out.println(7 - board.findIndexOfTile(getParent()).x);
 		
-		// TODO: Revision
+		int currentX = (int) board.findIndexOfTile(getParent()).x;
+		int currentY = (int) board.findIndexOfTile(getParent()).y;
 		
-		if(board.findIndexOfTile(getParent()).x != 7) {
-			for(int x1 = (int) board.findIndexOfTile(getParent()).x; x1 < 8; x1++) {
-				if(board.tiles[(int) board.findIndexOfTile(getParent()).y][x1] != getParent() &&
-						board.tiles[(int) board.findIndexOfTile(getParent()).y][x1].doesHavePiece()) break;
-				getValidPositions().add(board.tiles[(int) board.findIndexOfTile(getParent()).y][x1]);
+		for(int x1 = 0; x1 < 8 - currentX; x1++) {
+			int differenceTopY = 8 - currentY;
+			int differenceBottomY = currentY;
+			
+			if(x1 < differenceTopY) {
+				getValidPositions().add(board.tiles[currentY + x1][currentX + x1]);
+			}
+			
+			if(x1 < differenceBottomY + 1) {
+				getValidPositions().add(board.tiles[currentY - x1][currentX + x1]);
 			}
 		}
 		
-		if(board.findIndexOfTile(getParent()).x != 0) {
-			for(int x2 = (int) board.findIndexOfTile(getParent()).x; x2 > -1; x2--) {
-				if(board.tiles[(int) board.findIndexOfTile(getParent()).y][x2] != getParent() &&
-						board.tiles[(int) board.findIndexOfTile(getParent()).y][x2].doesHavePiece()) break;
-				getValidPositions().add(board.tiles[(int) board.findIndexOfTile(getParent()).y][x2]);
+		for(int x2 = currentX; x2 > -1; x2--) {
+			int differenceTopY = 8 - currentY;
+			int differenceBottomY = currentY;
+			
+			if(x2 < differenceTopY) {
+				getValidPositions().add(board.tiles[currentY + x2][currentX - x2]);
+			}
+			
+			if(x2 < differenceBottomY + 1) {
+				getValidPositions().add(board.tiles[currentY - x2][currentX - x2]);
 			}
 		}
 		
-		for(int y1 = (int) board.findIndexOfTile(getParent()).y; y1 < 8; y1++) {
-			if(board.tiles[y1][(int) board.findIndexOfTile(getParent()).x] != getParent() &&
-					board.tiles[y1][(int) board.findIndexOfTile(getParent()).x].doesHavePiece()) break;
-			getValidPositions().add(board.tiles[y1][(int) board.findIndexOfTile(getParent()).x]);
-		}
-	
-		for(int y2 = (int) board.findIndexOfTile(getParent()).y; y2 > -1; y2--) {
-			if(board.tiles[y2][(int) board.findIndexOfTile(getParent()).x] != getParent() &&
-					board.tiles[y2][(int) board.findIndexOfTile(getParent()).x].doesHavePiece()) break;
-			getValidPositions().add(board.tiles[y2][(int) board.findIndexOfTile(getParent()).x]);
-		}
-		
-		/*if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
-			getValidPositions().add(board.tiles[y][x]);
-		*/
-		//setValidPositionsCalculated(true);
-		//}
 	}
-
+	
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
 		update(delta, board, cam);
-		sb.draw(rookTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
+		sb.draw(bishopTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
 	}
 
 	@Override
@@ -170,6 +160,4 @@ public class Rook implements IPiece {
 		// TODO Auto-generated method stub
 		
 	}
-	
-
 }

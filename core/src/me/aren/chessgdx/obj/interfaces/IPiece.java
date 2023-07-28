@@ -17,6 +17,7 @@ public interface IPiece extends IGameObject {
 	int WIDTH = 96, HEIGHT = 96;
 	// TODO: Deprecated functions: setValidPositionsCalculated, validPositionsCalculated
 	default void update(float delta, Board board, OrthographicCamera cam) {
+		// TODO : Maybe this should not be called every frame
 		calculateValidPositions(board);
 		
 		if(Gdx.input.isButtonJustPressed(Buttons.LEFT)) {
@@ -68,7 +69,7 @@ public interface IPiece extends IGameObject {
 			    	}
 			    	
 			    	getParent().setGreen(false);
-			    	setValidPositionsCalculated(false);
+			    	//calculateValidPositions(board);
 			    	setSelected(false);
 			    }
 		    }
