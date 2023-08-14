@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 
 import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.interfaces.IGameObject;
+import me.aren.chessgdx.obj.interfaces.IPiece;
+
+import java.util.LinkedList;
 
 public class Board implements IGameObject {
 	
@@ -17,6 +20,9 @@ public class Board implements IGameObject {
 	public int turnCounter = 0;
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
+	// TODO: Create getters and setters for these two linkedlists
+	public LinkedList<IPiece> capturedPiecesWhite = new LinkedList<IPiece>();
+	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
 	
 	public Vector2 findIndexOfTile(Tile tileToSearch) {	
 		for(int y = 0; y < 8; y++) {

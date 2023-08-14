@@ -15,6 +15,7 @@ public class Tile implements IGameObject {
 	final String TILE_DARK_PATH = "tile_dark_brown.png";
 	SpriteBatch tileSb;
 	boolean white;
+	boolean capturable = false;
 	private boolean green = false;
 	private Vector2 pos;
 	Texture tileTexture;
@@ -100,5 +101,21 @@ public class Tile implements IGameObject {
 	
 	public boolean doesHavePiece() {
 		return piece != null;
+	}
+
+	public boolean isPieceWhite() {
+		return piece.isWhite();
+	}
+
+	public IPiece getPiece() {
+		return piece;
+    }
+
+	public boolean isCapturable() {
+		return capturable;
+	}
+
+	public void setCapturable(boolean capturable) {
+		this.capturable = capturable;
 	}
 }

@@ -56,6 +56,24 @@ public interface IPiece extends IGameObject {
 			    		if(new Rectangle(tile.getPos().x, tile.getPos().y, WIDTH, HEIGHT).contains(finalPos)) {
 			    			getParent().setGreen(false);
 			    			getParent().removePiece();
+
+							if(tile.isCapturable()) {
+								if(board.turnWhite) {
+									board.capturedPiecesWhite.add(tile.getPiece());
+									if(GlobalSettings.debugModeEnabled) {
+										Gdx.app.log("DEBUG", "White captured a " + tile.getPiece().getName());
+									}
+								} else {
+									if(GlobalSettings.debugModeEnabled) {
+										Gdx.app.log("DEBUG", "Black captured a " + tile.getPiece().getName());
+									}
+									board.capturedPiecesBlack.add(tile.getPiece());
+								}
+
+								tile.removePiece();
+								tile.setCapturable(false);
+							}
+
 			    			tile.addPiece(this);
 			    			afterMove();
 			    			board.setTurn(!board.getTurn());
@@ -68,7 +86,7 @@ public interface IPiece extends IGameObject {
 			    		}
 			    	}
 			    	
-			    	getParent().setGreen(false);
+			    	if(getParent() != null) getParent().setGreen(false);
 			    	//calculateValidPositions(board);
 			    	setSelected(false);
 			    }
@@ -87,4 +105,6 @@ public interface IPiece extends IGameObject {
 	public void calculateValidPositions(Board board);
 	public void afterMove();
 	public LinkedBlockingQueue<Tile> getValidPositions();
+	public boolean isCaptured();
+	public void setCaptured(boolean captured);
 }

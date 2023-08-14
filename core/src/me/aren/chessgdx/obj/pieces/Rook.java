@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -22,7 +23,8 @@ public class Rook implements IPiece {
 	boolean selected = false;
 	boolean calculatedValidPositions = false;
 	boolean white;
-	boolean justMoved = false;
+//	boolean justMoved = false;
+	boolean captured = false;
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
 	
@@ -44,7 +46,7 @@ public class Rook implements IPiece {
 	public void calculateValidPositions(Board board) {
 		// TODO Auto-generated method stub
 		//if(!validPositionsCalculated()) {
-		if(getValidPositions().size() != 0) {
+		if(!getValidPositions().isEmpty()) {
 			for(Tile tile : getValidPositions()) {
 				getValidPositions().remove(tile);
 			}
@@ -57,30 +59,66 @@ public class Rook implements IPiece {
 		
 		if(board.findIndexOfTile(getParent()).x != 7) {
 			for(int x1 = (int) board.findIndexOfTile(getParent()).x; x1 < 8; x1++) {
-				if(board.tiles[(int) board.findIndexOfTile(getParent()).y][x1] != getParent() &&
-						board.tiles[(int) board.findIndexOfTile(getParent()).y][x1].doesHavePiece()) break;
-				getValidPositions().add(board.tiles[(int) board.findIndexOfTile(getParent()).y][x1]);
+				Tile tile = board.tiles[(int) board.findIndexOfTile(getParent()).y][x1];
+				if(tile != getParent() && tile.doesHavePiece() ) {
+					if(tile.isPieceWhite() == board.getTurn()) {
+						break;
+					} else {
+						getValidPositions().add(tile);
+						tile.setCapturable(true);
+						break;
+					}
+
+				}
+				if(!getValidPositions().contains(tile)) getValidPositions().add(tile);
 			}
 		}
 		
 		if(board.findIndexOfTile(getParent()).x != 0) {
 			for(int x2 = (int) board.findIndexOfTile(getParent()).x; x2 > -1; x2--) {
-				if(board.tiles[(int) board.findIndexOfTile(getParent()).y][x2] != getParent() &&
-						board.tiles[(int) board.findIndexOfTile(getParent()).y][x2].doesHavePiece()) break;
-				getValidPositions().add(board.tiles[(int) board.findIndexOfTile(getParent()).y][x2]);
+				Tile tile = board.tiles[(int) board.findIndexOfTile(getParent()).y][x2];
+				if(tile != getParent() && tile.doesHavePiece() ) {
+					if(tile.isPieceWhite() == board.getTurn()) {
+						break;
+					} else {
+						getValidPositions().add(tile);
+						tile.setCapturable(true);
+						break;
+					}
+
+				}
+				if(!getValidPositions().contains(tile)) getValidPositions().add(tile);
 			}
 		}
 		
 		for(int y1 = (int) board.findIndexOfTile(getParent()).y; y1 < 8; y1++) {
-			if(board.tiles[y1][(int) board.findIndexOfTile(getParent()).x] != getParent() &&
-					board.tiles[y1][(int) board.findIndexOfTile(getParent()).x].doesHavePiece()) break;
-			getValidPositions().add(board.tiles[y1][(int) board.findIndexOfTile(getParent()).x]);
+			Tile tile = board.tiles[y1][(int) board.findIndexOfTile(getParent()).x];
+			if(tile != getParent() && tile.doesHavePiece() ) {
+				if(tile.isPieceWhite() == board.getTurn()) {
+					break;
+				} else {
+					getValidPositions().add(tile);
+					tile.setCapturable(true);
+					break;
+				}
+
+			}
+			if(!getValidPositions().contains(tile)) getValidPositions().add(tile);
 		}
 	
 		for(int y2 = (int) board.findIndexOfTile(getParent()).y; y2 > -1; y2--) {
-			if(board.tiles[y2][(int) board.findIndexOfTile(getParent()).x] != getParent() &&
-					board.tiles[y2][(int) board.findIndexOfTile(getParent()).x].doesHavePiece()) break;
-			getValidPositions().add(board.tiles[y2][(int) board.findIndexOfTile(getParent()).x]);
+			Tile tile = board.tiles[y2][(int) board.findIndexOfTile(getParent()).x];
+			if(tile != getParent() && tile.doesHavePiece() ) {
+				if(tile.isPieceWhite() == board.getTurn()) {
+					break;
+				} else {
+					getValidPositions().add(tile);
+					tile.setCapturable(true);
+					break;
+				}
+
+			}
+			if(!getValidPositions().contains(tile)) getValidPositions().add(tile);
 		}
 		
 		/*if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
@@ -94,7 +132,7 @@ public class Rook implements IPiece {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		update(delta, board, cam);
-		sb.draw(rookTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
+		if(getParent() != null) sb.draw(rookTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
 	}
 
 	@Override
@@ -124,6 +162,16 @@ public class Rook implements IPiece {
 	public LinkedBlockingQueue<Tile> getValidPositions() {
 		// TODO Auto-generated method stub
 		return validPositions;
+	}
+
+	@Override
+	public boolean isCaptured() {
+		return captured;
+	}
+
+	@Override
+	public void setCaptured(boolean captured) {
+		this.captured = captured;
 	}
 
 	@Override
@@ -168,7 +216,10 @@ public class Rook implements IPiece {
 	@Override
 	public void afterMove() {
 		// TODO Auto-generated method stub
-		
+		if(isCaptured()) {
+			getParent().removePiece();
+			setParent(null);
+		}
 	}
 	
 

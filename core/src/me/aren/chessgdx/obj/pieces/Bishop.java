@@ -21,7 +21,8 @@ public class Bishop implements IPiece {
 	boolean selected = false;
 	boolean calculatedValidPositions = false;
 	boolean white;
-	boolean justMoved = false;
+//	boolean justMoved = false;
+	boolean captured = false;
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
 	
@@ -52,39 +53,54 @@ public class Bishop implements IPiece {
 		
 		int currentX = (int) board.findIndexOfTile(getParent()).x;
 		int currentY = (int) board.findIndexOfTile(getParent()).y;
-		
+
+		boolean foundPiece = false;
+		int pieceX = 0;
+
 		for(int x1 = 0; x1 < 8 - currentX; x1++) {
 			int differenceTopY = 8 - currentY;
-			int differenceBottomY = currentY;
-			
-			if(x1 < differenceTopY) {
-				getValidPositions().add(board.tiles[currentY + x1][currentX + x1]);
+
+			// bottom right
+            if(x1 < differenceTopY) {
+				if (!board.tiles[currentY + x1][currentX + x1].doesHavePiece()) {
+					getValidPositions().add(board.tiles[currentY + x1][currentX + x1]);
+				}
 			}
-			
-			if(x1 < differenceBottomY + 1) {
-				getValidPositions().add(board.tiles[currentY - x1][currentX + x1]);
+
+			// top right
+			if(x1 < currentY + 1) {
+				if (!board.tiles[currentY - x1][currentX + x1].doesHavePiece() && !foundPiece) {
+					getValidPositions().add(board.tiles[currentY - x1][currentX + x1]);
+				} else if(!foundPiece) {
+					foundPiece = true;
+				}
 			}
 		}
 		
 		for(int x2 = currentX; x2 > -1; x2--) {
 			int differenceTopY = 8 - currentY;
-			int differenceBottomY = currentY;
-			
-			if(x2 < differenceTopY) {
-				getValidPositions().add(board.tiles[currentY + x2][currentX - x2]);
+
+			// bottom left
+            if(x2 < differenceTopY) {
+				if(!board.tiles[currentY + x2][currentX - x2].doesHavePiece()) {
+					getValidPositions().add(board.tiles[currentY + x2][currentX - x2]);
+				}
 			}
-			
-			if(x2 < differenceBottomY + 1) {
-				getValidPositions().add(board.tiles[currentY - x2][currentX - x2]);
+
+			// top left
+			if(x2 < currentY + 1) {
+				if(!board.tiles[currentY - x2][currentX - x2].doesHavePiece()) {
+					getValidPositions().add(board.tiles[currentY - x2][currentX - x2]);
+				}
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public void render(float delta) {
 		update(delta, board, cam);
-		sb.draw(bishopTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
+		if(getParent() != null) sb.draw(bishopTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
 	}
 
 	@Override
@@ -102,18 +118,28 @@ public class Bishop implements IPiece {
 		// TODO Auto-generated method stub
 		return selected;
 	}
-	
+
 	public void setSelected(boolean selected) {
 		// TODO Auto-generated method stub
 		this.selected = selected;
 		//parent.setGreen(true);
-		
+
 	}
 
 	@Override
 	public LinkedBlockingQueue<Tile> getValidPositions() {
 		// TODO Auto-generated method stub
 		return validPositions;
+	}
+
+	@Override
+	public boolean isCaptured() {
+		return captured;
+	}
+
+	@Override
+	public void setCaptured(boolean captured) {
+		this.captured = captured;
 	}
 
 	@Override
@@ -151,13 +177,16 @@ public class Bishop implements IPiece {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "rook";
+		return "bishop";
 	}
 
 
 	@Override
 	public void afterMove() {
 		// TODO Auto-generated method stub
-		
+		if(isCaptured()) {
+			getParent().removePiece();
+			setParent(null);
+		}
 	}
 }

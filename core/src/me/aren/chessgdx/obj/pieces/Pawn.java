@@ -21,6 +21,7 @@ public class Pawn implements IPiece {
 	OrthographicCamera cam;
 	boolean selected = false;
 	boolean calculatedValidPositions = false;
+	boolean captured = false;
 	boolean white;
 	//boolean justMoved = false;
 	Board board;
@@ -72,7 +73,7 @@ public class Pawn implements IPiece {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		update(delta, board, cam);
-		sb.draw(pawnTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
+		if(getParent() != null) sb.draw(pawnTexture, parent.getPos().x, parent.getPos().y, WIDTH, HEIGHT);
 	}
 
 	@Override
@@ -102,6 +103,16 @@ public class Pawn implements IPiece {
 	public LinkedBlockingQueue<Tile> getValidPositions() {
 		// TODO Auto-generated method stub
 		return validPositions;
+	}
+
+	@Override
+	public boolean isCaptured() {
+		return captured;
+	}
+
+	@Override
+	public void setCaptured(boolean captured) {
+		this.captured = true;
 	}
 
 	@Override
@@ -146,6 +157,11 @@ public class Pawn implements IPiece {
 	public void afterMove() {
 		// TODO Auto-generated method stub
 		if(!hasMoved) hasMoved = true;
+
+		if(isCaptured()) {
+			getParent().removePiece();
+			setParent(null);
+		}
 	}
 
 }
