@@ -91,6 +91,14 @@ public class Board implements IGameObject {
 	public void setTurn(boolean white) {
 		turnWhite = white;
 		turnCounter++;
+		
+		for(Tile[] tileArray : tiles) {
+			for(Tile tile : tileArray) {
+				if(tile.doesHavePiece()) {
+					tile.getPiece().afterTurnChange();
+				}
+			}
+		}
 	}
 	
 	public boolean getTurn() {

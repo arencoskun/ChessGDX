@@ -221,6 +221,20 @@ public class Rook implements IPiece {
 			setParent(null);
 		}
 	}
+
+
+	@Override
+	public void afterCapture() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void afterTurnChange() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

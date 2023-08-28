@@ -44,7 +44,6 @@ public class Pawn implements IPiece {
 	@Override
 	public void calculateValidPositions(Board board) {
 		// TODO Auto-generated method stub
-		//if(!validPositionsCalculated()) {
 		if(getValidPositions().size() != 0) {
 			for(Tile tile : getValidPositions()) {
 				getValidPositions().remove(tile);
@@ -54,19 +53,37 @@ public class Pawn implements IPiece {
 		int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
 		int x = (int) board.findIndexOfTile(parent).x;
 		
-		if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece())
+		if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece()) {
 			getValidPositions().add(board.tiles[y][x]);
-		
-		if(!hasMoved) {
-			if(white) {
-				getValidPositions().add(board.tiles[y - 1][x]);
-			} else {
-				getValidPositions().add(board.tiles[y + 1][x]);
+			
+			if(!hasMoved) {
+				if(white) {
+					if(!board.tiles[y - 1][x].doesHavePiece()) getValidPositions().add(board.tiles[y - 1][x]);
+				} else {
+					if(!board.tiles[y + 1][x].doesHavePiece()) getValidPositions().add(board.tiles[y + 1][x]);
+				}
+			}
+			
+			Tile[] positionsToCheckForCapture = new Tile[2];
+			
+			if(x != 7) {
+				positionsToCheckForCapture[0] = board.tiles[y][x + 1];
+			} else if(x != 0) {
+				positionsToCheckForCapture[1] = board.tiles[y][x - 1];
+			}
+
+			for(Tile tileToCapture : positionsToCheckForCapture) {
+				if(tileToCapture != null) {
+					if(tileToCapture.doesHavePiece() && tileToCapture.getPiece().isWhite() != white) {
+						tileToCapture.setCapturable(true);
+						getValidPositions().add(tileToCapture);
+					}
+				}
 			}
 		}
 		
+		// TODO: Deprecated method, should be removed
 		setValidPositionsCalculated(true);
-		//}
 	}
 
 	@Override
@@ -162,6 +179,18 @@ public class Pawn implements IPiece {
 			getParent().removePiece();
 			setParent(null);
 		}
+	}
+
+	@Override
+	public void afterCapture() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterTurnChange() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

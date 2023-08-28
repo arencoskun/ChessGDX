@@ -43,7 +43,10 @@ public class PlayScreen implements Screen {
 			board.tiles[1][i].addPiece(new Pawn(sb, cam, board, false));
 		}
 		
-		board.tiles[2][3].addPiece(new Bishop(sb, cam, board, true));
+		board.tiles[7][2].addPiece(new Bishop(sb, cam, board, true));
+		board.tiles[7][5].addPiece(new Bishop(sb, cam, board, true));
+		board.tiles[0][2].addPiece(new Bishop(sb, cam, board, false));
+		board.tiles[0][5].addPiece(new Bishop(sb, cam, board, false));
 	}
 	
 	@Override

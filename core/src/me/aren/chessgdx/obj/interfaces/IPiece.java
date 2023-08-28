@@ -72,6 +72,7 @@ public interface IPiece extends IGameObject {
 
 								tile.removePiece();
 								tile.setCapturable(false);
+								afterCapture();
 							}
 
 			    			tile.addPiece(this);
@@ -79,7 +80,11 @@ public interface IPiece extends IGameObject {
 			    			board.setTurn(!board.getTurn());
 			    			if(GlobalSettings.debugModeEnabled) {
 			    				Gdx.app.log("DEBUG", "-------- Turn: " + (board.turnWhite ? " WHITE " : "BLACK ") + "--------");
+			    				Gdx.app.log("DEBUG", "Recalculating valid positions!");
 			    			}
+			    			
+			    			calculateValidPositions(board);
+			    			
 			    		} else {
 			    			setSelected(false);
 				    		tile.setGreen(false);
@@ -87,6 +92,12 @@ public interface IPiece extends IGameObject {
 			    	}
 			    	
 			    	if(getParent() != null) getParent().setGreen(false);
+			    	
+			    	for(Tile[] tiles : board.tiles) {
+			    		for(Tile tile : tiles) {
+			    			if(tile.isGreen()) tile.setGreen(false);
+			    		}
+			    	}
 			    	//calculateValidPositions(board);
 			    	setSelected(false);
 			    }
@@ -107,4 +118,6 @@ public interface IPiece extends IGameObject {
 	public LinkedBlockingQueue<Tile> getValidPositions();
 	public boolean isCaptured();
 	public void setCaptured(boolean captured);
+	public void afterCapture();
+	public void afterTurnChange();
 }

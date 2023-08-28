@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -25,6 +26,11 @@ public class Bishop implements IPiece {
 	boolean captured = false;
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
+	int limitXTopR = 8;
+	int limitXBottomR = 8;
+	int limitXTopL = 0;
+	int limitXBottomL = 0;
+	boolean foundPiece1 = false;
 	
 	public Bishop(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
 		// TODO Auto-generated constructor stub
@@ -42,59 +48,138 @@ public class Bishop implements IPiece {
 	@Override
 	public void calculateValidPositions(Board board) {
 		// TODO Auto-generated method stub
-		//if(!validPositionsCalculated()) {
+		
+		// limits need to be recalculated after pieces move
+		
 		if(getValidPositions().size() != 0) {
 			for(Tile tile : getValidPositions()) {
 				getValidPositions().remove(tile);
 			}
 		}
 		
-		//System.out.println(7 - board.findIndexOfTile(getParent()).x);
-		
 		int currentX = (int) board.findIndexOfTile(getParent()).x;
 		int currentY = (int) board.findIndexOfTile(getParent()).y;
-
-		boolean foundPiece = false;
-		int pieceX = 0;
-
+		int differenceTopY = 8 - currentY;
+		
 		for(int x1 = 0; x1 < 8 - currentX; x1++) {
-			int differenceTopY = 8 - currentY;
-
-			// bottom right
-            if(x1 < differenceTopY) {
-				if (!board.tiles[currentY + x1][currentX + x1].doesHavePiece()) {
-					getValidPositions().add(board.tiles[currentY + x1][currentX + x1]);
+			
+			
+			if(x1 < differenceTopY) {
+				Tile tile = board.tiles[currentY + x1][currentX + x1];
+				if(tile.doesHavePiece() && tile.getPiece() != this && currentX + x1 <= limitXBottomR) {
+					limitXBottomR = currentX + x1;
+				}
+				
+				if(currentX + x1 <= limitXBottomR) {
+					if(tile.doesHavePiece() && tile.getPiece().isWhite() != white) {
+						tile.setCapturable(true);
+						getValidPositions().add(tile);
+					} else if(!tile.doesHavePiece()) {
+						getValidPositions().add(tile);
+					}
 				}
 			}
-
+			
+			
 			// top right
 			if(x1 < currentY + 1) {
-				if (!board.tiles[currentY - x1][currentX + x1].doesHavePiece() && !foundPiece) {
-					getValidPositions().add(board.tiles[currentY - x1][currentX + x1]);
-				} else if(!foundPiece) {
-					foundPiece = true;
+				Tile tile = board.tiles[currentY - x1][currentX + x1];
+				if(tile.doesHavePiece() && tile.getPiece() != this && currentX + x1 <= limitXTopR) {
+					limitXTopR = currentX + x1;
+				}
+				
+				if(currentX + x1 <= limitXTopR) {
+					if(tile.doesHavePiece() && tile.getPiece().isWhite() != white) {
+						tile.setCapturable(true);
+						getValidPositions().add(tile);
+					} else if(!tile.doesHavePiece()) {
+						getValidPositions().add(tile);
+					}
+					
 				}
 			}
 		}
 		
 		for(int x2 = currentX; x2 > -1; x2--) {
-			int differenceTopY = 8 - currentY;
 
 			// bottom left
-            if(x2 < differenceTopY) {
-				if(!board.tiles[currentY + x2][currentX - x2].doesHavePiece()) {
-					getValidPositions().add(board.tiles[currentY + x2][currentX - x2]);
+			/*
+			 if(currentY + x2 < 8 && currentX - x2 > -1) {
+				if(!foundPiece3 && board.tiles[currentY + x2][currentX - x2].getPiece() != this) {
+		            if(x2 < differenceTopY) {
+						if(!board.tiles[currentY + x2][currentX - x2].doesHavePiece() && board.tiles[currentY + x2][currentX - x2].getPiece() != this) {
+							getValidPositions().add(board.tiles[currentY + x2][currentX - x2]);
+						} else if(board.tiles[currentY + x2][currentX - x2].isPieceWhite() != white) {
+							board.tiles[currentY + x2][currentX - x2].setCapturable(true);
+							getValidPositions().add(board.tiles[currentY + x2][currentX - x2]);
+							foundPiece3 = true;
+						} else {
+							foundPiece3 = true;
+						}
+					}
 				}
 			}
 
 			// top left
-			if(x2 < currentY + 1) {
-				if(!board.tiles[currentY - x2][currentX - x2].doesHavePiece()) {
-					getValidPositions().add(board.tiles[currentY - x2][currentX - x2]);
+			if(currentY - x2 > -1 && currentX - x2 > -1) {
+				if(!foundPiece4 && board.tiles[currentY - x2][currentX - x2].getPiece() != this) {
+					if(x2 < currentY + 1) {
+						if(!board.tiles[currentY - x2][currentX - x2].doesHavePiece() && board.tiles[currentY - x2][currentX - x2].getPiece() != this) {
+							getValidPositions().add(board.tiles[currentY - x2][currentX - x2]);
+						} else if(board.tiles[currentY - x2][currentX - x2].isPieceWhite() != white) {
+							board.tiles[currentY - x2][currentX - x2].setCapturable(true);
+							getValidPositions().add(board.tiles[currentY - x2][currentX - x2]);
+							foundPiece4 = true;
+						} else {
+							foundPiece4 = true;
+						}
+					}
 				}
 			}
+			*/
+			
+			if(x2 < differenceTopY) {
+				Tile tile = board.tiles[currentY + x2][currentX - x2];
+				if(tile.doesHavePiece() && tile.getPiece() != this && currentX - x2 >= limitXBottomL) {
+					limitXBottomL = currentX - x2;
+				}
+				
+				if(currentX - x2 >= limitXBottomL) {
+					if(tile.doesHavePiece() && tile.getPiece().isWhite() != white) {
+						tile.setCapturable(true);
+						getValidPositions().add(tile);
+					} else if(!tile.doesHavePiece()) {
+						getValidPositions().add(tile);
+					}
+				}
+			}
+			
+			
+			// top left
+			if(x2 < currentY + 1) {
+				Tile tile = board.tiles[currentY - x2][currentX - x2];
+				if(tile.doesHavePiece() && tile.getPiece() != this && currentX - x2 >= limitXTopL) {
+					limitXTopL = currentX - x2;
+				}
+				
+				if(currentX - x2 >= limitXTopL) {
+					if(tile.doesHavePiece() && tile.getPiece().isWhite() != white) {
+						tile.setCapturable(true);
+						getValidPositions().add(tile);
+					} else if(!tile.doesHavePiece()) {
+						getValidPositions().add(tile);
+					}
+					
+				}
+			}
+			
+			/*if(GlobalSettings.debugModeEnabled) {
+				Gdx.app.log("DEBUG", "Limit X Bottom R: " + limitXBottomR);
+				Gdx.app.log("DEBUG", "Limit X Bottom L: " + limitXBottomL);
+				Gdx.app.log("DEBUG", "Limit X Top R: " + limitXTopR);
+				Gdx.app.log("DEBUG", "Limit X Top L: " + limitXTopL);
+			}*/
 		}
-
 	}
 
 	@Override
@@ -188,5 +273,34 @@ public class Bishop implements IPiece {
 			getParent().removePiece();
 			setParent(null);
 		}
+		
+		// this is done to make sure the limits aren't set to their old positions
+		// the calculateValidPositions method will always recalculate them anyway so it just makes sure it is not set to the values they shouldn't be set to
+		// this is not really very good practice but for now it will do
+		// TODO: Maybe refactor
+		limitXTopR = 8;
+		limitXBottomR = 8;
+		limitXTopL = 0;
+		limitXBottomL = 0;
+	}
+
+
+	@Override
+	public void afterCapture() {
+		// TODO Auto-generated method stub
+		limitXTopR = 8;
+		limitXBottomR = 8;
+		limitXTopL = 0;
+		limitXBottomL = 0;
+	}
+
+
+	@Override
+	public void afterTurnChange() {
+		// TODO Auto-generated method stub
+		limitXTopR = 8;
+		limitXBottomR = 8;
+		limitXTopL = 0;
+		limitXBottomL = 0;
 	}
 }
