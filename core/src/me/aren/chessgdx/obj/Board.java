@@ -1,14 +1,16 @@
 package me.aren.chessgdx.obj;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import me.aren.chessgdx.GlobalSettings;
+import me.aren.chessgdx.network.ClientSideConnection;
+import me.aren.chessgdx.network.GameServer;
 import me.aren.chessgdx.obj.interfaces.IGameObject;
 import me.aren.chessgdx.obj.interfaces.IPiece;
-
-import java.util.LinkedList;
 
 public class Board implements IGameObject {
 	
@@ -18,11 +20,14 @@ public class Board implements IGameObject {
 	public Tile[][] tiles = new Tile[8][8];
 	public boolean turnWhite = true;
 	public int turnCounter = 0;
+	public int turnOnline = 0;
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
 	// TODO: Create getters and setters for these two linkedlists
 	public LinkedList<IPiece> capturedPiecesWhite = new LinkedList<IPiece>();
 	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
+	
+	private ClientSideConnection connection;
 	
 	public Vector2 findIndexOfTile(Tile tileToSearch) {	
 		for(int y = 0; y < 8; y++) {
@@ -38,8 +43,9 @@ public class Board implements IGameObject {
 		return new Vector2(-1, -1);
 	}
 	
-	public Board(SpriteBatch sb) {
+	public Board(SpriteBatch sb, ClientSideConnection connection) {
 		this.sb = sb;
+		this.connection = connection;
 		
 		for(int x = 0; x < 768; x += 96) {
 			for(int y = 768 - 96; y >= 0; y -= 96) {
@@ -52,11 +58,13 @@ public class Board implements IGameObject {
 	@Override
 	public void update(float delta) {
 		// TODO Auto-generated method stub
-		
+		turnOnline = connection.receiveTurn();
+		//System.out.println(connection.receiveTurn());
 	}
 
 	@Override
 	public void render(float delta) {
+		//update(delta);
 		for(Tile[] tilesY : tiles) {
 			for(Tile tile : tilesY) {
 				tile.render(delta);
@@ -88,7 +96,7 @@ public class Board implements IGameObject {
 		
 	}
 	
-	public void setTurn(boolean white) {
+	public void setTurn(boolean white, boolean multiplayer) {
 		turnWhite = white;
 		turnCounter++;
 		
@@ -99,10 +107,13 @@ public class Board implements IGameObject {
 				}
 			}
 		}
+		
+		if(multiplayer) GameServer.turn = white ? 1 : 2;
+		
 	}
 	
 	public boolean getTurn() {
-		return turnWhite;
+		return GameServer.turn == 1 ? true : false;
 	}
 	
 	public int getTurnCount() {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import me.aren.chessgdx.GlobalSettings;
+import me.aren.chessgdx.network.ClientSideConnection;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -31,13 +32,18 @@ public class Bishop implements IPiece {
 	int limitXTopL = 0;
 	int limitXBottomL = 0;
 	boolean foundPiece1 = false;
+	int playerID;
 	
-	public Bishop(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
+	ClientSideConnection connection;
+	
+	public Bishop(SpriteBatch sb, OrthographicCamera cam, Board board, int playerID, ClientSideConnection connection, boolean white) {
 		// TODO Auto-generated constructor stub
 		this.sb = sb;
 		this.cam = cam;
 		this.board = board;
 		this.white = white;
+		this.playerID = playerID;
+		this.connection = connection;
 		
 		validPositions = new LinkedBlockingQueue<Tile>();
 		
@@ -302,5 +308,19 @@ public class Bishop implements IPiece {
 		limitXBottomR = 8;
 		limitXTopL = 0;
 		limitXBottomL = 0;
+	}
+
+
+	@Override
+	public int getCurrentID() {
+		// TODO Auto-generated method stub
+		return playerID;
+	}
+
+
+	@Override
+	public ClientSideConnection getClientSideConnection() {
+		// TODO Auto-generated method stub
+		return connection;
 	}
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import me.aren.chessgdx.network.ClientSideConnection;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -27,14 +28,19 @@ public class Pawn implements IPiece {
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
 	boolean hasMoved = false;
+	int playerID;
+	
+	ClientSideConnection connection;
 	
 	
-	public Pawn(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
+	public Pawn(SpriteBatch sb, OrthographicCamera cam, Board board, int playerID, ClientSideConnection connection, boolean white) {
 		// TODO Auto-generated constructor stub
 		this.sb = sb;
 		this.cam = cam;
 		this.board = board;
 		this.white = white;
+		this.playerID = playerID;
+		this.connection = connection;
 		
 		validPositions = new LinkedBlockingQueue<Tile>();
 		
@@ -191,6 +197,18 @@ public class Pawn implements IPiece {
 	public void afterTurnChange() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getCurrentID() {
+		// TODO Auto-generated method stub
+		return playerID;
+	}
+
+	@Override
+	public ClientSideConnection getClientSideConnection() {
+		// TODO Auto-generated method stub
+		return connection;
 	}
 
 }
