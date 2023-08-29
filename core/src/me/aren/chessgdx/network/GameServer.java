@@ -11,6 +11,8 @@ public class GameServer {
 	private ServerSideConnection player2;
 	
 	public static int turn;
+	public static int[] movement = new int[2];
+	public static int turnCount;
 	
 	public GameServer() {
 		// TODO Refactor the server to use the LibGDX ServerSocket

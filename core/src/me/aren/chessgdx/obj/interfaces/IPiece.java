@@ -11,24 +11,33 @@ import com.badlogic.gdx.math.Vector3;
 
 import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.network.ClientSideConnection;
-import me.aren.chessgdx.network.GameServer;
-import me.aren.chessgdx.network.ServerSideConnection;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
-import me.aren.chessgdx.screens.PlayScreen;
 
 public interface IPiece extends IGameObject {
 	int WIDTH = 96, HEIGHT = 96;
+
 	// TODO: Deprecated functions: setValidPositionsCalculated, validPositionsCalculated
 	default void update(float delta, Board board, OrthographicCamera cam) {
 		// TODO : Maybe this should not be called every frame
 		calculateValidPositions(board);
+		
+		if(getClientSideConnection().receiveTurnCount() != 0 && !getClientSideConnection().boardUpdated) {
+			 int turnSide = getClientSideConnection().receiveTurnCount() % 2;
+			 
+			 if(turnSide == 0 && getCurrentID() == 1) {
+				 getClientSideConnection().onReceivedMovementInfo();
+			 } else if(turnSide == 1 && getCurrentID() == 2) {
+				 getClientSideConnection().onReceivedMovementInfo();
+			 }
+		}
 		
 		// TODO: If you click between two tiles it will select both
 		
 		if(Gdx.input.isButtonJustPressed(Buttons.LEFT)) {
 		    Vector3 touch = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		    Vector2 finalPos = new Vector2(touch.x, touch.y);
+		    
 		    boolean isWhiteMultiplayer = getCurrentID() == 1 ? true : false;
 		    
 		    if(getClientSideConnection().getTurnInfo() == getCurrentID() && isWhite() == isWhiteMultiplayer) {
@@ -64,7 +73,17 @@ public interface IPiece extends IGameObject {
 				    	for(Tile tile : getValidPositions()) {
 				    		if(new Rectangle(tile.getPos().x, tile.getPos().y, WIDTH, HEIGHT).contains(finalPos)) {
 				    			getParent().setGreen(false);
+				    			getClientSideConnection().sendMovement(
+				    					board.boardIndexTo1D(board.tiles[(int) board.findIndexOfTile(getParent()).y][(int) board.findIndexOfTile(getParent()).x]),
+				    					board.boardIndexTo1D(board.tiles[(int) board.findIndexOfTile(tile).y][(int) board.findIndexOfTile(tile).x]));
+				    			int[] movement = getClientSideConnection().receiveMovementInfo();
+				    			System.out.println("MOVEMENT: " + movement[0] + " -> " + movement[1]);
+				    			
+				    			
+				    			
 				    			getParent().removePiece();
+				    			
+				    			
 	
 								if(tile.isCapturable()) {
 									if(board.turnWhite) {
@@ -90,13 +109,23 @@ public interface IPiece extends IGameObject {
 				    			
 				    			board.setTurn(false, true);
 				    			getClientSideConnection().setTurn(getClientSideConnection().getTurnInfo() == 1 ? 2 : 1);
+				    			getClientSideConnection().sendTurnCount(getClientSideConnection().receiveTurnCount() + 1);
+				    			getClientSideConnection().boardUpdated = false;
+				    			
 				    			System.out.println("AFTER SET TURN::: " + getClientSideConnection().getTurnInfo());
+				    			
 				    			if(GlobalSettings.debugModeEnabled) {
 				    				Gdx.app.log("DEBUG", "-------- Turn: " + (board.turnWhite ? " WHITE " : "BLACK ") + "--------");
 				    				Gdx.app.log("DEBUG", "Recalculating valid positions!");
 				    			}
 				    			
 				    			calculateValidPositions(board);
+				    			
+						    	if(board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).x].doesHavePiece()) {
+						    		IPiece originalPiece = board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).x].getPiece();
+						    		board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).x].removePiece();
+						    		board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[1])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[1])).x].addPiece(originalPiece);
+						    	}
 				    			
 				    		} else {
 				    			setSelected(false);

@@ -120,5 +120,19 @@ public class Board implements IGameObject {
 		// TODO Auto-generated method stub
 		return turnCounter;
 	}
+	
+	public int boardIndexTo1D(Tile tile) {
+		int x = (int) findIndexOfTile(tile).x;
+		int y = (int) findIndexOfTile(tile).y;
+		
+		return y * 8 + x;
+	}
+	
+	public Tile indexToBoardIndex(int index) {
+		int y = index >> 3;
+		int x = index & 7;
+		
+		return tiles[y][x];
+	}
 
 }

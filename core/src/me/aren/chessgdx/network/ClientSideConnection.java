@@ -7,6 +7,8 @@ import java.net.Socket;
 
 import com.badlogic.gdx.Gdx;
 
+import me.aren.chessgdx.obj.Board;
+import me.aren.chessgdx.obj.interfaces.IPiece;
 import me.aren.chessgdx.screens.PlayScreen;
 
 public class ClientSideConnection {
@@ -17,6 +19,9 @@ public class ClientSideConnection {
 	
 	int turn = 1;
 	int testNumber;
+	int[] movement = new int[2];
+	int turnCount = 0;
+	public boolean boardUpdated = false;
 	
 	public ClientSideConnection(PlayScreen playScreen) {
 		Gdx.app.log("CLIENT", "Creating client side connection...");
@@ -171,6 +176,141 @@ public class ClientSideConnection {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	// 2d to 1d: i=y*W + x
+	public void sendMovement(int originalPos, int targetPos) {
+		Thread sendToServer = new Thread(new Runnable() {
+			public void run() {
+				try {
+					dataOut.writeInt(104);
+					dataOut.writeInt(originalPos);
+					dataOut.writeInt(targetPos);
+					dataOut.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		sendToServer.start();
+		
+		try {
+			sendToServer.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public int[] receiveMovementInfo() {
+		Thread sendToServer = new Thread(new Runnable() {
+			public void run() {
+				int posCounter = -1;
+				try {
+					dataOut.writeInt(103);
+					dataOut.flush();
+					posCounter = 0;
+					
+					while(posCounter >= 0) {
+						int in = dataIn.readInt();
+						
+						if(posCounter == 0) {
+							System.out.println("RECEIVED FIRST POS: " + in);
+							movement[0] = in;
+							posCounter++;
+						} else {
+							System.out.println("RECEIVED LAST POS: " + in);
+							movement[1] = in;
+							posCounter = -1;
+						}
+					}
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		sendToServer.start();
+		
+		try {
+			sendToServer.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		GameServer.movement = movement;
+		
+		return movement;
+	}
+	
+	public void sendTurnCount(int turnCount) {
+		Thread sendToServer = new Thread(new Runnable() {
+			public void run() {
+				try {
+					dataOut.writeInt(106);
+					dataOut.writeInt(turnCount);
+					dataOut.flush();
+					
+					System.out.println("SENT 106 TO SERVER");
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		sendToServer.start();
+		
+		try {
+			sendToServer.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public int receiveTurnCount() {
+		Thread askToServer = new Thread(new Runnable() {
+			public void run() {
+				try {
+					dataOut.writeInt(105);
+					dataOut.flush();
+					
+					System.out.println("SENT 105 TO SERVER");
+					
+					int in = dataIn.readInt();
+					System.out.println("GOT TURN COUNT: " + in);
+					turnCount = in;
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		askToServer.start();
+		
+		try {
+			askToServer.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return turnCount;
+	}
+	
+	public void onReceivedMovementInfo() {
+		if(!boardUpdated) {
+			System.out.println("ON RECEIVE MOVEMENT INFO ---------------");
+			int[] movement = receiveMovementInfo();
+			Board board = playScreen.board;
+			IPiece originalPiece = board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).x].getPiece();
+			board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[0])).x].removePiece();
+			board.tiles[(int) board.findIndexOfTile(board.indexToBoardIndex(movement[1])).y][(int) board.findIndexOfTile(board.indexToBoardIndex(movement[1])).x].addPiece(originalPiece);
+			boardUpdated = true;
 		}
 	}
 }
