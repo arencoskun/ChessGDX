@@ -2,9 +2,8 @@ package me.aren.chessgdx;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 
-import me.aren.chessgdx.screens.PlayScreen;
+import me.aren.chessgdx.screens.MainMenuScreen;
 
 public class ChessGdx extends Game {
 	public SpriteBatch sb;
@@ -12,7 +11,7 @@ public class ChessGdx extends Game {
 	@Override
 	public void create () {
 		sb = new SpriteBatch();
-		setScreen(new PlayScreen(this));
+		setScreen(new MainMenuScreen(this));
 	}
 
 	@Override
