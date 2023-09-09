@@ -53,8 +53,8 @@ public class Pawn implements IPiece {
 		int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
 		int x = (int) board.findIndexOfTile(parent).x;
 		
-		if(!(y > 7 || y < 0 || x > 7 || x < 0) && !board.tiles[y][x].doesHavePiece()) {
-			getValidPositions().add(board.tiles[y][x]);
+		if(!(y > 7 || y < 0 || x > 7 || x < 0)) {
+			 if(!board.tiles[y][x].doesHavePiece()) getValidPositions().add(board.tiles[y][x]);
 			
 			if(!hasMoved) {
 				if(white) {
