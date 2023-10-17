@@ -30,7 +30,6 @@ public class Bishop implements IPiece {
 	int limitXBottomR = 8;
 	int limitXTopL = 0;
 	int limitXBottomL = 0;
-	boolean foundPiece1 = false;
 	
 	public Bishop(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
 		// TODO Auto-generated constructor stub
@@ -230,6 +229,7 @@ public class Bishop implements IPiece {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		bishopTexture.dispose();
 	}
 
 	@Override

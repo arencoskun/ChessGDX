@@ -66,9 +66,8 @@ public class Pawn implements IPiece {
 			
 			Tile[] positionsToCheckForCapture = new Tile[2];
 			
-			if(x != 7) {
+			if(x != 7 && x != 0) {
 				positionsToCheckForCapture[0] = board.tiles[y][x + 1];
-			} else if(x != 0) {
 				positionsToCheckForCapture[1] = board.tiles[y][x - 1];
 			}
 
@@ -81,9 +80,6 @@ public class Pawn implements IPiece {
 				}
 			}
 		}
-		
-		// TODO: Deprecated method, should be removed
-		setValidPositionsCalculated(true);
 	}
 
 	@Override
@@ -135,7 +131,7 @@ public class Pawn implements IPiece {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+		pawnTexture.dispose();
 	}
 
 	@Override
