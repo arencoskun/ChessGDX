@@ -232,9 +232,8 @@ public class Rook implements IPiece {
 
 
 	@Override
-	public void afterTurnChange() {
+	public void afterTurnChange(boolean newTurn) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 

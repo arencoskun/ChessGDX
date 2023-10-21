@@ -27,6 +27,7 @@ public class Pawn implements IPiece {
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
 	boolean hasMoved = false;
+	private int moveCount = 0;
 	
 	
 	public Pawn(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
@@ -66,8 +67,17 @@ public class Pawn implements IPiece {
 			
 			Tile[] positionsToCheckForCapture = new Tile[2];
 			
-			if(x != 7 && x != 0) {
+			positionsToCheckForCapture[0] = board.tiles[y][x];
+			positionsToCheckForCapture[1] = board.tiles[y][x];
+			
+			if(x == 7) {
+				positionsToCheckForCapture[0] = null;
+				positionsToCheckForCapture[1] = board.tiles[y][x - 1];
+			} else if(x == 0) {
 				positionsToCheckForCapture[0] = board.tiles[y][x + 1];
+				positionsToCheckForCapture[1] = null;
+			} else {
+				positionsToCheckForCapture[0] = board.tiles[y][x +  1];
 				positionsToCheckForCapture[1] = board.tiles[y][x - 1];
 			}
 
@@ -170,6 +180,8 @@ public class Pawn implements IPiece {
 	public void afterMove() {
 		// TODO Auto-generated method stub
 		if(!hasMoved) hasMoved = true;
+		moveCount++;
+		System.out.println("PAWN MOVE COUNT: " + moveCount);
 
 		if(isCaptured()) {
 			getParent().removePiece();
@@ -184,9 +196,12 @@ public class Pawn implements IPiece {
 	}
 
 	@Override
-	public void afterTurnChange() {
+	public void afterTurnChange(boolean newTurn) {
 		// TODO Auto-generated method stub
-		
+	}
+	
+	public int getMoveCount() {
+		return moveCount;
 	}
 
 }

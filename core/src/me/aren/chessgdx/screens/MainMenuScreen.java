@@ -1,6 +1,7 @@
 package me.aren.chessgdx.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -8,7 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.VisDialog;
 import com.kotcrab.vis.ui.widget.VisTable;
+import com.kotcrab.vis.ui.widget.VisTextArea;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 
 import me.aren.chessgdx.ChessGdx;
@@ -28,7 +31,7 @@ public class MainMenuScreen implements Screen {
 	public MainMenuScreen(ChessGdx game) {
 		// TODO Auto-generated constructor stub
 		this.game = game;
-		VisUI.load();
+		if(!VisUI.isLoaded()) VisUI.load();
 		stage = new Stage();
 		table = new VisTable();
 		table.setFillParent(true);
@@ -45,12 +48,35 @@ public class MainMenuScreen implements Screen {
 			}
 			
 		});
-		addButton("Join Server");
+		addButton("Join Server").addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				VisDialog dialog = new VisDialog("Goodbye :(", "dialog") {
+				    public void result(Object obj) {
+				        System.out.println(obj);
+				    }
+				};
+				dialog.text("Are you sure you want to quit?");
+				
+				dialog.closeOnEscape();
+				dialog.show(stage);
+			}
+		});
 		addButton("Exit").addListener(new ClickListener() {
 
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				Gdx.app.exit();
+				VisDialog dialog = new VisDialog("Goodbye :(", "dialog") {
+				    public void result(Object obj) {
+				        if((Boolean) obj == true) Gdx.app.exit();
+				    }
+				};
+				dialog.text("Are you sure you want to quit?");
+				dialog.button("Yes", true);
+				dialog.button("No", false);
+				dialog.key(Keys.ENTER, true);
+				dialog.closeOnEscape();
+				dialog.show(stage);
 			}
 			
 		});

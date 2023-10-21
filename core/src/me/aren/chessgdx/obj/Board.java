@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import me.aren.chessgdx.GlobalSettings;
+import me.aren.chessgdx.net.ServerData;
 import me.aren.chessgdx.obj.interfaces.IGameObject;
 import me.aren.chessgdx.obj.interfaces.IPiece;
 
@@ -20,6 +21,8 @@ public class Board implements IGameObject {
 	public int turnCounter = 0;
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
+	long lastTurnRequest;
+	long requestCooldown = 1000;
 	// TODO: Create getters and setters for these two linkedlists
 	public LinkedList<IPiece> capturedPiecesWhite = new LinkedList<IPiece>();
 	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
@@ -89,25 +92,46 @@ public class Board implements IGameObject {
 	}
 	
 	public void setTurn(boolean white) {
+		if(GlobalSettings.multiplayer) {
+			GlobalSettings.getSocket().emit("turn-changed", white == true ? 1 : 2);
+		}
 		turnWhite = white;
 		turnCounter++;
 		
 		for(Tile[] tileArray : tiles) {
 			for(Tile tile : tileArray) {
 				if(tile.doesHavePiece()) {
-					tile.getPiece().afterTurnChange();
+					tile.getPiece().afterTurnChange(turnWhite);
+					tile.getPiece().setSelected(false);
 				}
 			}
 		}
 	}
 	
 	public boolean getTurn() {
+		if(GlobalSettings.multiplayer) {
+			if(System.currentTimeMillis() >= lastTurnRequest + requestCooldown) {
+				GlobalSettings.getSocket().emit("get-turn");
+				lastTurnRequest = System.currentTimeMillis();
+			}
+			
+			if(ServerData.getTurn() == 1 || ServerData.getTurn() == 2)
+				return ServerData.getTurn() == 1 ? true : false;
+		}
 		return turnWhite;
 	}
 	
 	public int getTurnCount() {
 		// TODO Auto-generated method stub
 		return turnCounter;
+	}
+	
+	public void updateBoard(int originalX, int originalY,
+							int targetX, int targetY) {
+		IPiece originalPiece = tiles[originalY][originalX].getPiece();
+		tiles[originalY][originalX].removePiece();
+		tiles[targetY][targetX].addPiece(originalPiece);
+		
 	}
 
 }

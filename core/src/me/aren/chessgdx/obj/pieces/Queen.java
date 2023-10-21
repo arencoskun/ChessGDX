@@ -333,7 +333,7 @@ public class Queen implements IPiece {
 
 
 	@Override
-	public void afterTurnChange() {
+	public void afterTurnChange(boolean newTurn) {
 		// TODO Auto-generated method stub
 		
 		// this is done to make sure the limits aren't set to their old positions

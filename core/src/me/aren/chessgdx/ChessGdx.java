@@ -23,5 +23,7 @@ public class ChessGdx extends Game {
 	public void dispose () {
 		super.dispose();
 		sb.dispose();
+		// Done to make sure the program actually exits
+		System.exit(0);
 	}
 }
