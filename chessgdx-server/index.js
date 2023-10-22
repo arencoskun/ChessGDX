@@ -48,6 +48,14 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('update-board', arg);
     });
 
+    socket.on('tile-set-enpassantable', (arg) => {
+        socket.broadcast.emit('tile-receive-enpassantable', { x: arg.x, y: arg.y, enpassantable: arg.enpassantable });
+    });
+
+    socket.on('pawn-move-count', (arg) => {
+        socket.broadcast.emit('pawn-change-move-count', { x: arg.x, y: arg.y, moveCount: arg.moveCount });
+    });
+
     socket.on('disconnect', function() {
         connectedClients--;
         socket.broadcast.emit('player-left');

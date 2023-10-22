@@ -8,6 +8,7 @@ import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.net.ServerData;
 import me.aren.chessgdx.obj.interfaces.IGameObject;
 import me.aren.chessgdx.obj.interfaces.IPiece;
+import me.aren.chessgdx.obj.pieces.Pawn;
 
 import java.util.LinkedList;
 
@@ -132,6 +133,18 @@ public class Board implements IGameObject {
 		tiles[originalY][originalX].removePiece();
 		tiles[targetY][targetX].addPiece(originalPiece);
 		
+	}
+
+	public void setEnPassantable(int tileX, int tileY, boolean enpassantable) {
+		tiles[tileY][tileX].setEnPassantable(enpassantable);
+	}
+
+	public void setPawnMoveCount(int tileX, int tileY, int moveCount) {
+		if(tiles[tileY][tileX].getPiece() instanceof Pawn) {
+			Pawn pawn = (Pawn) tiles[tileY][tileX].getPiece();
+
+			pawn.setMoveCount(moveCount);
+		}
 	}
 
 }

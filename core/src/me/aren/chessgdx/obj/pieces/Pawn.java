@@ -7,9 +7,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Pawn implements IPiece {
 	
@@ -75,9 +78,31 @@ public class Pawn implements IPiece {
 					if (pawn.getMoveCount() == 1) {
 						if(pawn.isWhite()) {
 							board.tiles[currentY + 1][x - 1].setEnPassantable(true);
+							if(GlobalSettings.multiplayer) {
+								try {
+									JSONObject jsonObject = new JSONObject();
+									jsonObject.put("x", x - 1);
+									jsonObject.put("y", currentY + 1);
+									jsonObject.put("enpassantable", true);
+									GlobalSettings.getSocket().emit("tile-set-enpassantable", jsonObject);
+								}	catch (JSONException e) {
+									e.printStackTrace();
+								}
+							}
 							getValidPositions().add(board.tiles[currentY + 1][x - 1]);
 						} else {
 							board.tiles[currentY - 1][x - 1].setEnPassantable(true);
+							if(GlobalSettings.multiplayer) {
+								try {
+									JSONObject jsonObject = new JSONObject();
+									jsonObject.put("x", x - 1);
+									jsonObject.put("y", currentY - 1);
+									jsonObject.put("enpassantable", true);
+									GlobalSettings.getSocket().emit("tile-set-enpassantable", jsonObject);
+								}	catch (JSONException e) {
+									e.printStackTrace();
+								}
+							}
 							getValidPositions().add(board.tiles[currentY - 1][x - 1]);
 						}
 					}
@@ -89,9 +114,31 @@ public class Pawn implements IPiece {
 					if (pawn.getMoveCount() == 1) {
 						if(pawn.isWhite()) {
 							board.tiles[currentY + 1][x + 1].setEnPassantable(true);
+							if(GlobalSettings.multiplayer) {
+								try {
+									JSONObject jsonObject = new JSONObject();
+									jsonObject.put("x", x + 1);
+									jsonObject.put("y", currentY + 1);
+									jsonObject.put("enpassantable", true);
+									GlobalSettings.getSocket().emit("tile-set-enpassantable", jsonObject);
+								}	catch (JSONException e) {
+									e.printStackTrace();
+								}
+							}
 							getValidPositions().add(board.tiles[currentY + 1][x + 1]);
 						} else {
 							board.tiles[currentY - 1][x + 1].setEnPassantable(true);
+							if(GlobalSettings.multiplayer) {
+								try {
+									JSONObject jsonObject = new JSONObject();
+									jsonObject.put("x", x + 1);
+									jsonObject.put("y", currentY - 1);
+									jsonObject.put("enpassantable", true);
+									GlobalSettings.getSocket().emit("tile-set-enpassantable", jsonObject);
+								}	catch (JSONException e) {
+									e.printStackTrace();
+								}
+							}
 							getValidPositions().add(board.tiles[currentY - 1][x + 1]);
 						}
 					}
@@ -212,6 +259,19 @@ public class Pawn implements IPiece {
 		// TODO Auto-generated method stub
 		if(!hasMoved) hasMoved = true;
 		moveCount++;
+		if(GlobalSettings.multiplayer) {
+			JSONObject jsonData = new JSONObject();
+
+			try {
+				jsonData.put("x", getParent().getPosBoard().x);
+				jsonData.put("y", getParent().getPosBoard().y);
+				jsonData.put("moveCount", moveCount);
+
+				GlobalSettings.getSocket().emit("pawn-move-count", jsonData);
+			} catch(JSONException e) {
+				e.printStackTrace();
+			}
+		}
 		System.out.println("PAWN MOVE COUNT: " + moveCount);
 
 		if(isCaptured()) {
@@ -235,4 +295,7 @@ public class Pawn implements IPiece {
 		return moveCount;
 	}
 
+	public void setMoveCount(int moveCount) {
+		this.moveCount = moveCount;
+	}
 }

@@ -130,6 +130,17 @@ public interface IPiece extends IGameObject {
 									board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].removePiece();
 								}
 								tile.setEnPassantable(false);
+								if(GlobalSettings.multiplayer) {
+									JSONObject data = new JSONObject();
+									try {
+										data.put("x", tile.getPosBoard().x);
+										data.put("y", tile.getPosBoard().y);
+										data.put("enpassantable", false);
+										GlobalSettings.getSocket().emit("tile-set-enpassantable", data);
+									} catch (JSONException e) {
+										e.printStackTrace();
+									}
+								}
 							}
 
 			    			tile.addPiece(this);

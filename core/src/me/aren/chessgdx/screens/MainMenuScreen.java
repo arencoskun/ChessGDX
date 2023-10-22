@@ -4,17 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisDialog;
-import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisTextArea;
-import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.kotcrab.vis.ui.widget.*;
 
 import me.aren.chessgdx.ChessGdx;
+import me.aren.chessgdx.GlobalSettings;
+import me.aren.chessgdx.net.ServerData;
 
 public class MainMenuScreen implements Screen {
 	
@@ -27,6 +28,7 @@ public class MainMenuScreen implements Screen {
 	private final int BOARD_WIDTH = TILE_WIDTH * 8, BOARD_HEIGHT = TILE_HEIGHT * 8;
 	private Texture darkTileTex;
 	private Texture lightTileTex;
+	private boolean https = true;
 	
 	public MainMenuScreen(ChessGdx game) {
 		// TODO Auto-generated constructor stub
@@ -51,15 +53,44 @@ public class MainMenuScreen implements Screen {
 		addButton("Join Server").addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				VisDialog dialog = new VisDialog("Goodbye :(", "dialog") {
-				    public void result(Object obj) {
-				        System.out.println(obj);
-				    }
-				};
-				dialog.text("Are you sure you want to quit?");
-				
-				dialog.closeOnEscape();
+				VisDialog dialog = new VisDialog("Enter server address:", "dialog");
+
+				VisTextField textField = new VisTextField();
+				textField.setMessageText("Server IP Address");
+				VisTextButton submitButton = new VisTextButton("Join");
+				VisCheckBox httpsButton = new VisCheckBox("HTTPS");
+
+				submitButton.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						System.out.println(textField.getText());
+						if(!textField.getText().isEmpty()) {
+							ServerData.setAddress((https ? "https://" : "http://") + textField.getText());
+							GlobalSettings.multiplayer = true;
+							game.setScreen(new PlayScreen(game));
+						}
+					}
+				});
+
+				httpsButton.addListener(new ChangeListener() {
+					@Override
+					public void changed(ChangeEvent event, Actor actor) {
+						VisCheckBox visCheckBox = (VisCheckBox) event.getListenerActor();
+						System.out.println(visCheckBox.isChecked());
+						https = visCheckBox.isChecked();
+					}
+				});
+
+				httpsButton.setChecked(https);
+
+				dialog.add(textField).fill().width(400);
+				dialog.button(submitButton);
+				dialog.add(httpsButton);
+
+				dialog.addCloseButton();
 				dialog.show(stage);
+
+				System.out.println(textField.getText());
 			}
 		});
 		addButton("Exit").addListener(new ClickListener() {
@@ -68,14 +99,16 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				VisDialog dialog = new VisDialog("Goodbye :(", "dialog") {
 				    public void result(Object obj) {
-				        if((Boolean) obj == true) Gdx.app.exit();
+				        if((Boolean) obj) Gdx.app.exit();
 				    }
 				};
+
 				dialog.text("Are you sure you want to quit?");
 				dialog.button("Yes", true);
 				dialog.button("No", false);
 				dialog.key(Keys.ENTER, true);
 				dialog.closeOnEscape();
+				dialog.addCloseButton();
 				dialog.show(stage);
 			}
 			

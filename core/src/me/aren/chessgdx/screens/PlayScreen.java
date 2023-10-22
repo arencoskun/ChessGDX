@@ -81,7 +81,9 @@ public class PlayScreen implements Screen {
 	
 	private void connectSocket() {
 		try {
-			socket = IO.socket("https://shrimp-precise-pony.ngrok-free.app");
+			// https://shrimp-precise-pony.ngrok-free.app
+			Gdx.app.log("SocketIO", "Trying to connect to server: " + ServerData.getAddress());
+			socket = IO.socket(ServerData.getAddress());
 			socket.connect();
 			Gdx.app.log("SocketIO", "Socket connected..");
 		} catch(Exception e) {
@@ -93,14 +95,14 @@ public class PlayScreen implements Screen {
 		
 		idHandler = new PlayerIDHandler(socket);
 		socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-			
+
 			@Override
 			public void call(Object... args) {
 				Gdx.app.log("SocketIO", "Connected.");
 			}
 		})
 		  .on("update-board", new Emitter.Listener() {
-			
+
 			@Override
 			public void call(Object... args) {
 				JSONObject movement = (JSONObject) args[0];
@@ -112,24 +114,43 @@ public class PlayScreen implements Screen {
 					e.printStackTrace();
 				}
 			}
-		})
-		  .on("room-full", new Emitter.Listener() {
+		}).on("tile-receive-enpassantable", new Emitter.Listener() {
+
+					@Override
+					public void call(Object... args) {
+						JSONObject tileData = (JSONObject) args[0];
+						try {
+							board.setEnPassantable(tileData.getInt("x"), tileData.getInt("y"), tileData.getBoolean("enpassantable"));
+						} catch(JSONException e) {
+							e.printStackTrace();
+						}
+					}
+		}).on("pawn-change-move-count", new Emitter.Listener() {
+
+					@Override
+					public void call(Object... args) {
+						JSONObject data = (JSONObject) args[0];
+						try {
+							board.setPawnMoveCount(data.getInt("x"), data.getInt("y"), data.getInt("moveCount"));
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+		}).on("room-full", new Emitter.Listener() {
 			
 			@Override
 			public void call(Object... args) {
 				ServerData.setRoomFull(true);
 				System.out.println("ROOM FULL");
 			}
-		})
-		  .on("player-left", new Emitter.Listener() {
+		}).on("player-left", new Emitter.Listener() {
 			
 			@Override
 			public void call(Object... args) {
 				ServerData.setRoomFull(false);
 				Gdx.app.log("SocketIO", "Other player left");
 			}
-		})
-		  .on("receive-turn", new Emitter.Listener() {
+		}).on("receive-turn", new Emitter.Listener() {
 			
 			@Override
 			public void call(Object... args) {
@@ -143,9 +164,7 @@ public class PlayScreen implements Screen {
 					e.printStackTrace();
 				}
 			}
-		})
-		  .on("playerID", idHandler)
-		  .on("info-max-client-number-reached", new Emitter.Listener() {
+		}).on("playerID", idHandler).on("info-max-client-number-reached", new Emitter.Listener() {
 			
 			@Override
 			public void call(Object... args) {
