@@ -45,13 +45,14 @@ public class Pawn implements IPiece {
 	@Override
 	public void calculateValidPositions(Board board) {
 		// TODO Auto-generated method stub
-		if(getValidPositions().size() != 0) {
+		if(!getValidPositions().isEmpty()) {
 			for(Tile tile : getValidPositions()) {
 				getValidPositions().remove(tile);
 			}
 		}
 			
 		int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
+		int currentY = (int)(board.findIndexOfTile(parent).y);
 		int x = (int) board.findIndexOfTile(parent).x;
 		
 		if(!(y > 7 || y < 0 || x > 7 || x < 0)) {
@@ -66,7 +67,37 @@ public class Pawn implements IPiece {
 			}
 			
 			Tile[] positionsToCheckForCapture = new Tile[2];
-			
+
+			if(x - 1 > -1 && currentY - 1 > -1 && currentY + 1 < 8 && x + 1 < 8) {
+				if (board.tiles[currentY][x - 1].getPiece() instanceof Pawn) {
+					Pawn pawn = (Pawn) board.tiles[currentY][x - 1].getPiece();
+
+					if (pawn.getMoveCount() == 1) {
+						if(pawn.isWhite()) {
+							board.tiles[currentY + 1][x - 1].setEnPassantable(true);
+							getValidPositions().add(board.tiles[currentY + 1][x - 1]);
+						} else {
+							board.tiles[currentY - 1][x - 1].setEnPassantable(true);
+							getValidPositions().add(board.tiles[currentY - 1][x - 1]);
+						}
+					}
+				}
+
+				if (board.tiles[currentY][x + 1].getPiece() instanceof Pawn) {
+					Pawn pawn = (Pawn) board.tiles[currentY][x + 1].getPiece();
+
+					if (pawn.getMoveCount() == 1) {
+						if(pawn.isWhite()) {
+							board.tiles[currentY + 1][x + 1].setEnPassantable(true);
+							getValidPositions().add(board.tiles[currentY + 1][x + 1]);
+						} else {
+							board.tiles[currentY - 1][x + 1].setEnPassantable(true);
+							getValidPositions().add(board.tiles[currentY - 1][x + 1]);
+						}
+					}
+				}
+			}
+
 			positionsToCheckForCapture[0] = board.tiles[y][x];
 			positionsToCheckForCapture[1] = board.tiles[y][x];
 			

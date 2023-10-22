@@ -16,6 +16,7 @@ public class Tile implements IGameObject {
 	SpriteBatch tileSb;
 	boolean white;
 	boolean capturable = false;
+	boolean enPassantable = false;
 	private boolean green = false;
 	private Vector2 pos;
 	Texture tileTexture;
@@ -76,6 +77,10 @@ public class Tile implements IGameObject {
 		return pos;
 	}
 
+	public Vector2 getPosBoard() {
+		return new Vector2(pos.x / 96, 7 - (pos.y / 96));
+	}
+
 	public void setPos(Vector2 pos) {
 		this.pos = pos;
 	}
@@ -117,5 +122,13 @@ public class Tile implements IGameObject {
 
 	public void setCapturable(boolean capturable) {
 		this.capturable = capturable;
+	}
+
+	public void setEnPassantable(boolean enPassantable) {
+		this.enPassantable = enPassantable;
+	}
+
+	public boolean isEnPassantable() {
+		return enPassantable;
 	}
 }

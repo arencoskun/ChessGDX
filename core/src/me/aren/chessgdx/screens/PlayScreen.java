@@ -62,6 +62,7 @@ public class PlayScreen implements Screen {
 		}
 		
 		board.tiles[4][2].addPiece(new Pawn(sb, cam, board, false));
+		board.tiles[3][2].addPiece(new Pawn(sb, cam, board, true));
 		
 		board.tiles[0][7].addPiece(new Rook(sb, cam, board, false));
 		board.tiles[0][0].addPiece(new Rook(sb, cam, board, false));

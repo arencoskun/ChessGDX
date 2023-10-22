@@ -94,6 +94,7 @@ public interface IPiece extends IGameObject {
 			    			getParent().removePiece();
 
 							if(tile.isCapturable()) {
+
 								if(board.turnWhite) {
 									board.capturedPiecesWhite.add(tile.getPiece());
 									if(GlobalSettings.debugModeEnabled) {
@@ -109,6 +110,26 @@ public interface IPiece extends IGameObject {
 								tile.removePiece();
 								tile.setCapturable(false);
 								afterCapture();
+							}
+
+							if(tile.isEnPassantable()) {
+								System.out.println(tile.getPosBoard().y);
+								if(board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece() != null &&
+										board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece().isWhite()) {
+									if(GlobalSettings.debugModeEnabled) {
+										Gdx.app.log("DEBUG", "Black captured a " +board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece().getName());
+									}
+									board.capturedPiecesWhite.add(board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece());
+									board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].removePiece();
+								} else if(board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece() != null &&
+										!board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece().isWhite()) {
+									if(GlobalSettings.debugModeEnabled) {
+										Gdx.app.log("DEBUG", "White captured a " +board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece().getName());
+									}
+									board.capturedPiecesBlack.add(board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece());
+									board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].removePiece();
+								}
+								tile.setEnPassantable(false);
 							}
 
 			    			tile.addPiece(this);
