@@ -37,6 +37,12 @@ public class PlayScreen implements Screen {
 	private Socket socket;
 	private String playerID;
 	PlayerIDHandler idHandler;
+
+	long currentTime = 0;
+	long serverTimeout = 500;
+	long lastServerConnectAttempt = 0;
+
+	boolean connectedToServer = false;
 	
 	public PlayScreen(ChessGdx game) {
 		if(GlobalSettings.multiplayer) {
@@ -179,6 +185,8 @@ public class PlayScreen implements Screen {
 				
 			}
 		});
+
+		lastServerConnectAttempt = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -187,8 +195,20 @@ public class PlayScreen implements Screen {
 	}
 	
 	private void update(float delta) {
-		if(playerID == null && GlobalSettings.multiplayer) {
-			playerID = idHandler.getPlayerID();
+
+		if(GlobalSettings.multiplayer) {
+			currentTime = System.currentTimeMillis();
+			if(currentTime > lastServerConnectAttempt + serverTimeout && !socket.connected()) {
+				game.setScreen(new DisconnectedScreen(game));
+			} else if(socket.connected()) {
+				connectedToServer = true;
+			}
+
+			if(connectedToServer && !socket.connected()) {
+				game.setScreen(new DisconnectedScreen(game));
+			}
+
+			if(playerID == null) playerID = idHandler.getPlayerID();
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.D)) {

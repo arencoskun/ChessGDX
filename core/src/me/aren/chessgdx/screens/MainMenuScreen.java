@@ -46,6 +46,7 @@ public class MainMenuScreen implements Screen {
 
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				GlobalSettings.multiplayer = false;
 				game.setScreen(new PlayScreen(game));
 			}
 			

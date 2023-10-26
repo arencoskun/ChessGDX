@@ -26,6 +26,7 @@ io.on('connection', function(socket) {
     socket.emit('playerID', { id: connectedClients });
 
     if(connectedClients == maxClients) {
+        console.log('Room is now full, the game can start.');
         socket.broadcast.emit("room-full");
         socket.emit('room-full');
     }
