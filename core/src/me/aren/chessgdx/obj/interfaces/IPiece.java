@@ -95,6 +95,18 @@ public interface IPiece extends IGameObject {
 
 							if(tile.isCapturable()) {
 
+								if(GlobalSettings.multiplayer) {
+									JSONObject data = new JSONObject();
+									try {
+										data.put("x", tile.getPosBoard().x);
+										data.put("y", tile.getPosBoard().y);
+										data.put("white", board.turnWhite);
+										GlobalSettings.getSocket().emit("piece-captured", data);
+									} catch (JSONException e) {
+										e.printStackTrace();
+									}
+								}
+
 								if(board.turnWhite) {
 									board.capturedPiecesWhite.add(tile.getPiece());
 									if(GlobalSettings.debugModeEnabled) {
@@ -113,7 +125,6 @@ public interface IPiece extends IGameObject {
 							}
 
 							if(tile.isEnPassantable()) {
-								System.out.println(tile.getPosBoard().y);
 								if(board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece() != null &&
 										board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece().isWhite()) {
 									if(GlobalSettings.debugModeEnabled) {
@@ -121,6 +132,18 @@ public interface IPiece extends IGameObject {
 									}
 									board.capturedPiecesWhite.add(board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].getPiece());
 									board.tiles[(int) (tile.getPosBoard().y - 1)][(int) tile.getPosBoard().x].removePiece();
+
+									if(GlobalSettings.multiplayer) {
+										JSONObject data = new JSONObject();
+										try {
+											data.put("x", tile.getPosBoard().x);
+											data.put("y", tile.getPosBoard().y - 1);
+											data.put("white", true);
+											GlobalSettings.getSocket().emit("piece-captured", data);
+										} catch (JSONException e) {
+											e.printStackTrace();
+										}
+									}
 								} else if(board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece() != null &&
 										!board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece().isWhite()) {
 									if(GlobalSettings.debugModeEnabled) {
@@ -128,6 +151,17 @@ public interface IPiece extends IGameObject {
 									}
 									board.capturedPiecesBlack.add(board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].getPiece());
 									board.tiles[(int) (tile.getPosBoard().y + 1)][(int) tile.getPosBoard().x].removePiece();
+									if(GlobalSettings.multiplayer) {
+										JSONObject data = new JSONObject();
+										try {
+											data.put("x", tile.getPosBoard().x);
+											data.put("y", tile.getPosBoard().y + 1);
+											data.put("white", true);
+											GlobalSettings.getSocket().emit("piece-captured", data);
+										} catch (JSONException e) {
+											e.printStackTrace();
+										}
+									}
 								}
 								tile.setEnPassantable(false);
 								if(GlobalSettings.multiplayer) {

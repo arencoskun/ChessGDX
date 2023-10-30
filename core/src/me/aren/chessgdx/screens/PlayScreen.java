@@ -1,5 +1,7 @@
 package me.aren.chessgdx.screens;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.kotcrab.vis.ui.widget.VisDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,6 +45,8 @@ public class PlayScreen implements Screen {
 	long lastServerConnectAttempt = 0;
 
 	boolean connectedToServer = false;
+
+	private Stage stage;
 	
 	public PlayScreen(ChessGdx game) {
 		if(GlobalSettings.multiplayer) {
@@ -60,6 +64,8 @@ public class PlayScreen implements Screen {
 		
 		cam.setToOrtho(false);
 		font.setColor(Color.YELLOW);
+
+		stage = new Stage();
 		
 		board.tiles[7][7].addPiece(new Rook(sb, cam, board, true));
 		board.tiles[7][0].addPiece(new Rook(sb, cam, board, true));
@@ -120,6 +126,18 @@ public class PlayScreen implements Screen {
 					e.printStackTrace();
 				}
 			}
+		}).on("update-board-captured", new Emitter.Listener() {
+
+			@Override
+			public void call(Object... args) {
+				JSONObject captureData = (JSONObject) args[0];
+				try {
+					board.updateCapturedPiece(captureData.getInt("x"), captureData.getInt("y"), captureData.getBoolean("white"));
+				} catch(JSONException e) {
+					Gdx.app.error("SocketIO", "Error while receiving captured piece");
+					e.printStackTrace();
+				}
+			}
 		}).on("tile-receive-enpassantable", new Emitter.Listener() {
 
 					@Override
@@ -155,6 +173,7 @@ public class PlayScreen implements Screen {
 			public void call(Object... args) {
 				ServerData.setRoomFull(false);
 				Gdx.app.log("SocketIO", "Other player left");
+				socket.disconnect();
 			}
 		}).on("receive-turn", new Emitter.Listener() {
 			
@@ -191,11 +210,10 @@ public class PlayScreen implements Screen {
 	
 	@Override
 	public void show() {
-		
+		Gdx.input.setInputProcessor(stage);
 	}
 	
 	private void update(float delta) {
-
 		if(GlobalSettings.multiplayer) {
 			currentTime = System.currentTimeMillis();
 			if(currentTime > lastServerConnectAttempt + serverTimeout && !socket.connected()) {
@@ -208,7 +226,25 @@ public class PlayScreen implements Screen {
 				game.setScreen(new DisconnectedScreen(game));
 			}
 
-			if(playerID == null) playerID = idHandler.getPlayerID();
+			if(playerID == null && connectedToServer) playerID = idHandler.getPlayerID();
+
+			if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+				VisDialog dialog = new VisDialog("Hey there!", "dialog") {
+					public void result(Object obj) {
+						if ((Boolean) obj) {
+							socket.disconnect();
+						}
+					}
+				};
+
+				dialog.text("Are you sure you want to leave the server?");
+				dialog.button("Yes", true);
+				dialog.button("No", false);
+				dialog.key(Keys.ENTER, true);
+				dialog.closeOnEscape();
+				dialog.addCloseButton();
+				dialog.show(stage);
+			}
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.D)) {
@@ -221,6 +257,7 @@ public class PlayScreen implements Screen {
 	public void render(float delta) {
 		update(delta);
 		ScreenUtils.clear(0, 0, 0, 1);
+
 		sb.begin();
 		board.render(delta);
 		if(GlobalSettings.debugModeEnabled) {
@@ -232,6 +269,9 @@ public class PlayScreen implements Screen {
 			}
 		}
 		sb.end();
+
+		stage.act();
+		stage.draw();
 	}
 
 	@Override
@@ -258,12 +298,15 @@ public class PlayScreen implements Screen {
 				e.printStackTrace();
 			}
 		}
+
+		Gdx.input.setInputProcessor(null);
 	}
 
 	@Override
 	public void dispose() {
 		board.dispose();
 		font.dispose();
+		stage.dispose();
 	}
 
 }

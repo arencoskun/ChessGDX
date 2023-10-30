@@ -65,8 +65,14 @@ public class MainMenuScreen implements Screen {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
 						System.out.println(textField.getText());
-						if(!textField.getText().isEmpty()) {
-							ServerData.setAddress((https ? "https://" : "http://") + textField.getText());
+						String text = textField.getText();
+						if(!text.isEmpty()) {
+							if(text.contains("https://")) {
+								text = text.substring(8);
+							} else if(text.contains("http://")) {
+								text = text.substring(7);
+							}
+							ServerData.setAddress((https ? "https://" : "http://") + text);
 							GlobalSettings.multiplayer = true;
 							game.setScreen(new PlayScreen(game));
 						}

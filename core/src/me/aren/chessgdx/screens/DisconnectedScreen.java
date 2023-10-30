@@ -30,6 +30,10 @@ public class DisconnectedScreen implements Screen {
 	public void show() {
 		// TODO Auto-generated method stub
 		//GlobalSettings.setSocket(null);
+
+		if(GlobalSettings.multiplayer) {
+			GlobalSettings.multiplayer = false;
+		}
 	}
 	
 	private void update() {

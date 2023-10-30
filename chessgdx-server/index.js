@@ -57,6 +57,11 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('pawn-change-move-count', { x: arg.x, y: arg.y, moveCount: arg.moveCount });
     });
 
+    socket.on('piece-captured', (arg) => {
+        socket.broadcast.emit('update-board-captured', arg);
+        console.log("Piece captured!!!");
+    });
+
     socket.on('disconnect', function() {
         connectedClients--;
         socket.broadcast.emit('player-left');

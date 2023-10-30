@@ -94,7 +94,7 @@ public class Board implements IGameObject {
 	
 	public void setTurn(boolean white) {
 		if(GlobalSettings.multiplayer) {
-			GlobalSettings.getSocket().emit("turn-changed", white == true ? 1 : 2);
+			GlobalSettings.getSocket().emit("turn-changed", white ? 1 : 2);
 		}
 		turnWhite = white;
 		turnCounter++;
@@ -117,7 +117,7 @@ public class Board implements IGameObject {
 			}
 			
 			if(ServerData.getTurn() == 1 || ServerData.getTurn() == 2)
-				return ServerData.getTurn() == 1 ? true : false;
+				return ServerData.getTurn() == 1;
 		}
 		return turnWhite;
 	}
@@ -133,6 +133,16 @@ public class Board implements IGameObject {
 		tiles[originalY][originalX].removePiece();
 		tiles[targetY][targetX].addPiece(originalPiece);
 		
+	}
+
+	public void updateCapturedPiece(int x, int y, boolean white) {
+		IPiece capturedPiece = tiles[y][x].getPiece();
+		if(white) {
+			capturedPiecesWhite.add(capturedPiece);
+		} else {
+			capturedPiecesBlack.add(capturedPiece);
+		}
+		tiles[y][x].removePiece();
 	}
 
 	public void setEnPassantable(int tileX, int tileY, boolean enpassantable) {
