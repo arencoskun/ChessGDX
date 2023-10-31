@@ -5,6 +5,7 @@ public abstract class ServerData {
 	private static int playerID;
 	private static boolean roomFull;
 	private static String address;
+	private static boolean showingMessage;
 	
 	public static void setPlayerID(int playerID) {
 		ServerData.playerID = playerID;
@@ -36,5 +37,13 @@ public abstract class ServerData {
 
 	public static String getAddress() {
 		return address;
+	}
+
+	public static boolean isShowingMessage() {
+		return showingMessage;
+	}
+
+	public static void setShowingMessage(boolean showingMessage) {
+		ServerData.showingMessage = showingMessage;
 	}
 }

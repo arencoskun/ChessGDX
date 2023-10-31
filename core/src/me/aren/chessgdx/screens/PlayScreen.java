@@ -1,7 +1,15 @@
 package me.aren.chessgdx.screens;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
+import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisDialog;
+import com.kotcrab.vis.ui.widget.VisLabel;
+import com.kotcrab.vis.ui.widget.VisTextButton;
+import me.aren.chessgdx.obj.Tile;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,10 +51,19 @@ public class PlayScreen implements Screen {
 	long currentTime = 0;
 	long serverTimeout = 500;
 	long lastServerConnectAttempt = 0;
+	long lastServerSync = 0;
+	long syncTime = 300;
+	long startTime = 0;
+	long textAnimateTime = 2000;
+	long lastTextAnimate = 0;
 
 	boolean connectedToServer = false;
+	boolean showTurnMessage = true;
+	boolean messageOnScreen = false;
 
 	private Stage stage;
+	private VisDialog waitingDialog;
+	private VisLabel waitingDialogText;
 	
 	public PlayScreen(ChessGdx game) {
 		if(GlobalSettings.multiplayer) {
@@ -58,9 +75,9 @@ public class PlayScreen implements Screen {
 		
 		this.game = game;
 		sb = game.sb;
-		board = new Board(sb);
 		cam = new OrthographicCamera(768, 768);
 		font = new BitmapFont();
+		board = new Board(sb, cam);
 		
 		cam.setToOrtho(false);
 		font.setColor(Color.YELLOW);
@@ -89,6 +106,8 @@ public class PlayScreen implements Screen {
 		
 		board.tiles[7][3].addPiece(new Queen(sb, cam, board, true));
 		board.tiles[0][3].addPiece(new Queen(sb, cam, board, false));
+
+		startTime = System.currentTimeMillis();
 	}
 	
 	private void connectSocket() {
@@ -184,9 +203,45 @@ public class PlayScreen implements Screen {
 				try {
 					int turnInfo = data.getInt("turn");
 					ServerData.setTurn(turnInfo);
+
 				} catch(JSONException e) {
 					Gdx.app.error("SocketIO", "JSONException while receiving receive-turn.");
 					e.printStackTrace();
+				}
+			}
+		}).on("turn-changed", new Emitter.Listener() {
+			@Override
+			public void call(Object... args) {
+				if(ServerData.isRoomFull()) {
+					VisCheckBox disableBtn = new VisCheckBox("Disable this message");
+					VisTextButton okBtn = new VisTextButton("OK");
+					VisLabel label = new VisLabel("It is now your turn.");
+					VisDialog dialog = new VisDialog("", "dialog") {
+						public void result(Object obj) {
+							if ((Boolean) obj) {
+								close();
+							}
+						}
+					};
+
+					disableBtn.addListener(new ChangeListener() {
+						@Override
+						public void changed(ChangeEvent event, Actor actor) {
+							VisCheckBox visCheckBox = (VisCheckBox) event.getListenerActor();
+							System.out.println(visCheckBox.isChecked());
+							showTurnMessage = !visCheckBox.isChecked();
+						}
+					});
+
+					dialog.text(label);
+					dialog.button("OK", true);
+					dialog.getButtonsTable().row();
+					dialog.getButtonsTable().add(disableBtn);
+					dialog.key(Keys.ENTER, true);
+					dialog.addCloseButton();
+					dialog.closeOnEscape();
+					dialog.setCenterOnAdd(true);
+					if (stage.getActors().size == 0 && showTurnMessage) dialog.show(stage);
 				}
 			}
 		}).on("playerID", idHandler).on("info-max-client-number-reached", new Emitter.Listener() {
@@ -214,7 +269,26 @@ public class PlayScreen implements Screen {
 	}
 	
 	private void update(float delta) {
+		ServerData.setShowingMessage(stage.getActors().size > 0);
 		if(GlobalSettings.multiplayer) {
+			if(waitingDialog == null) {
+				waitingDialog = new VisDialog("", "dialog");
+				waitingDialogText = new VisLabel("Waiting for the other player to join.");
+				waitingDialog.getContentTable().pad(30);
+				waitingDialog.text(waitingDialogText);
+			}
+
+			if(currentTime > lastTextAnimate + textAnimateTime) {
+				int count = (int) waitingDialogText.getText().chars().filter(ch -> ch == '.').count();
+
+				if(count <= 4) {
+					waitingDialogText.setText(waitingDialogText.getText() + ".");
+				} else {
+					waitingDialogText.setText(waitingDialogText.getText().substring(0, waitingDialogText.getText().length - 4));
+				}
+				lastTextAnimate = System.currentTimeMillis();
+			}
+
 			currentTime = System.currentTimeMillis();
 			if(currentTime > lastServerConnectAttempt + serverTimeout && !socket.connected()) {
 				game.setScreen(new DisconnectedScreen(game));
@@ -237,13 +311,19 @@ public class PlayScreen implements Screen {
 					}
 				};
 
-				dialog.text("Are you sure you want to leave the server?");
+				dialog.text("Are you sure you want to leave the room?");
 				dialog.button("Yes", true);
 				dialog.button("No", false);
 				dialog.key(Keys.ENTER, true);
-				dialog.closeOnEscape();
 				dialog.addCloseButton();
-				dialog.show(stage);
+				dialog.closeOnEscape();
+				if(stage.getActors().size == 0)	dialog.show(stage);
+			}
+
+			if(!ServerData.isRoomFull()) {
+				if(stage.getActors().size == 0) waitingDialog.show(stage);
+			} else {
+				waitingDialog.hide();
 			}
 		}
 		

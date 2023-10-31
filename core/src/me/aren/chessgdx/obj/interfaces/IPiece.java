@@ -23,8 +23,8 @@ public interface IPiece extends IGameObject {
 	default void update(float delta, Board board, OrthographicCamera cam) {
 		// TODO : Maybe this should not be called every frame
 		calculateValidPositions(board);
-		
-		if((board.getTurn() == true ? 1 : 2) != ServerData.getPlayerID() && GlobalSettings.multiplayer) {
+
+		if((board.getTurn() ? 1 : 2) != ServerData.getPlayerID() && GlobalSettings.multiplayer) {
 			for(Tile[] tiles : board.tiles) {
 	    		for(Tile tile : tiles) {
 	    			if(tile.isGreen()) tile.setGreen(false);
@@ -32,11 +32,11 @@ public interface IPiece extends IGameObject {
 	    	}
 		}
 		
-		if(Gdx.input.isButtonJustPressed(Buttons.LEFT)) {
+		if(Gdx.input.isButtonJustPressed(Buttons.LEFT) && !ServerData.isShowingMessage()) {
 			if(GlobalSettings.multiplayer) {
 				if(!ServerData.isRoomFull()) return;
 				System.out.println("TURN: " + board.getTurn());
-				if((board.getTurn() == true ? 1 : 2) != ServerData.getPlayerID()) {
+				if((board.getTurn() ? 1 : 2) != ServerData.getPlayerID()) {
 					return;
 				}
 			}
@@ -73,8 +73,9 @@ public interface IPiece extends IGameObject {
 			    } else if(isSelected()) {
 			    	for(Tile tile : getValidPositions()) {
 			    		if(new Rectangle(tile.getPos().x, tile.getPos().y, WIDTH, HEIGHT).contains(finalPos)) {
+							JSONObject movementData = new JSONObject();
 			    			if(GlobalSettings.multiplayer) {
-			    				JSONObject movementData = new JSONObject();
+
 			    				Vector2 originalPos = board.findIndexOfTile(getParent());
 			    				Vector2 targetPos = board.findIndexOfTile(tile);
 			    				
@@ -83,8 +84,6 @@ public interface IPiece extends IGameObject {
 									movementData.put("originalY", originalPos.y);
 									movementData.put("targetX", targetPos.x);
 									movementData.put("targetY", targetPos.y);
-									
-									GlobalSettings.getSocket().emit("movement", movementData);
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -100,8 +99,9 @@ public interface IPiece extends IGameObject {
 									try {
 										data.put("x", tile.getPosBoard().x);
 										data.put("y", tile.getPosBoard().y);
-										data.put("white", board.turnWhite);
+										data.put("white", board.getTurn());
 										GlobalSettings.getSocket().emit("piece-captured", data);
+										GlobalSettings.getSocket().emit("movement", movementData);
 									} catch (JSONException e) {
 										e.printStackTrace();
 									}
@@ -122,6 +122,10 @@ public interface IPiece extends IGameObject {
 								tile.removePiece();
 								tile.setCapturable(false);
 								afterCapture();
+							} else {
+								if(GlobalSettings.multiplayer) {
+									GlobalSettings.getSocket().emit("movement", movementData);
+								}
 							}
 
 							if(tile.isEnPassantable()) {
@@ -156,7 +160,7 @@ public interface IPiece extends IGameObject {
 										try {
 											data.put("x", tile.getPosBoard().x);
 											data.put("y", tile.getPosBoard().y + 1);
-											data.put("white", true);
+											data.put("white", false);
 											GlobalSettings.getSocket().emit("piece-captured", data);
 										} catch (JSONException e) {
 											e.printStackTrace();

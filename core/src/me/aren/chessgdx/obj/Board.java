@@ -1,5 +1,6 @@
 package me.aren.chessgdx.obj;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -8,9 +9,15 @@ import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.net.ServerData;
 import me.aren.chessgdx.obj.interfaces.IGameObject;
 import me.aren.chessgdx.obj.interfaces.IPiece;
+import me.aren.chessgdx.obj.pieces.Bishop;
 import me.aren.chessgdx.obj.pieces.Pawn;
+import me.aren.chessgdx.obj.pieces.Queen;
+import me.aren.chessgdx.obj.pieces.Rook;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class Board implements IGameObject {
 	
@@ -23,10 +30,11 @@ public class Board implements IGameObject {
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
 	long lastTurnRequest;
-	long requestCooldown = 1000;
+	long requestCooldown = 0;
 	// TODO: Create getters and setters for these two linkedlists
 	public LinkedList<IPiece> capturedPiecesWhite = new LinkedList<IPiece>();
 	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
+	private OrthographicCamera cam;
 	
 	public Vector2 findIndexOfTile(Tile tileToSearch) {	
 		for(int y = 0; y < 8; y++) {
@@ -42,9 +50,10 @@ public class Board implements IGameObject {
 		return new Vector2(-1, -1);
 	}
 	
-	public Board(SpriteBatch sb) {
+	public Board(SpriteBatch sb, OrthographicCamera cam) {
 		this.sb = sb;
-		
+		this.cam = cam;
+
 		for(int x = 0; x < 768; x += 96) {
 			for(int y = 768 - 96; y >= 0; y -= 96) {
 				tiles[((BOARD_HEIGHT - TILE_HEIGHT) - y) / TILE_HEIGHT][x / TILE_WIDTH] = 
@@ -142,6 +151,7 @@ public class Board implements IGameObject {
 		} else {
 			capturedPiecesBlack.add(capturedPiece);
 		}
+
 		tiles[y][x].removePiece();
 	}
 

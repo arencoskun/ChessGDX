@@ -62,9 +62,9 @@ public class Pawn implements IPiece {
 			 if(!board.tiles[y][x].doesHavePiece()) getValidPositions().add(board.tiles[y][x]);
 			
 			if(!hasMoved) {
-				if(white) {
+				if(white && y - 1 > 0) {
 					if(!board.tiles[y - 1][x].doesHavePiece()) getValidPositions().add(board.tiles[y - 1][x]);
-				} else {
+				} else if(y + 1 < 8) {
 					if(!board.tiles[y + 1][x].doesHavePiece()) getValidPositions().add(board.tiles[y + 1][x]);
 				}
 			}

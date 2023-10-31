@@ -39,6 +39,8 @@ io.on('connection', function(socket) {
         } else {
             console.log('Tried to change turn but the game is NOT started yet. No changes made.')
         }
+
+        socket.broadcast.emit('turn-changed', arg);
     });
 
     socket.on('get-turn', function() {
@@ -59,7 +61,6 @@ io.on('connection', function(socket) {
 
     socket.on('piece-captured', (arg) => {
         socket.broadcast.emit('update-board-captured', arg);
-        console.log("Piece captured!!!");
     });
 
     socket.on('disconnect', function() {
@@ -67,7 +68,7 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('player-left');
         resetGame();
         console.log('Client disconnected. Number of clients left: ' + connectedClients);
-    })
+    });
 });
 
 function resetGame() {

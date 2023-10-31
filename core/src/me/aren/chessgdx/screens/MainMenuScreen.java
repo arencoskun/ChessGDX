@@ -65,7 +65,7 @@ public class MainMenuScreen implements Screen {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
 						System.out.println(textField.getText());
-						String text = textField.getText();
+						String text = textField.getText().trim().toLowerCase();
 						if(!text.isEmpty()) {
 							if(text.contains("https://")) {
 								text = text.substring(8);
