@@ -177,6 +177,7 @@ public class Rook implements IPiece {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		rookTexture.dispose();
 	}
 
 	@Override
