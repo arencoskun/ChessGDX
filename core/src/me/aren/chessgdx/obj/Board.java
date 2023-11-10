@@ -25,16 +25,18 @@ public class Board implements IGameObject {
 	final int BOARD_WIDTH = TILE_WIDTH * 8, BOARD_HEIGHT = TILE_HEIGHT * 8;
 	// TODO: This should not be public - public only for testing purposes
 	public Tile[][] tiles = new Tile[8][8];
-	public boolean turnWhite = true;
+	private boolean turnWhite = true;
 	public int turnCounter = 0;
 	BitmapFont font = new BitmapFont();
 	SpriteBatch sb;
 	long lastTurnRequest;
-	long requestCooldown = 0;
+	long requestCooldown = 25;
 	// TODO: Create getters and setters for these two linkedlists
 	public LinkedList<IPiece> capturedPiecesWhite = new LinkedList<IPiece>();
 	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
 	private OrthographicCamera cam;
+	private boolean check;
+	private boolean checkWhite;
 	
 	public Vector2 findIndexOfTile(Tile tileToSearch) {	
 		for(int y = 0; y < 8; y++) {
@@ -65,13 +67,13 @@ public class Board implements IGameObject {
 	@Override
 	public void update(float delta) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void render(float delta) {
 		for(Tile[] tilesY : tiles) {
 			for(Tile tile : tilesY) {
+
 				tile.render(delta);
 				
 				if(GlobalSettings.debugModeEnabled) {
@@ -82,6 +84,7 @@ public class Board implements IGameObject {
 					font.draw(sb, position, tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT);
 					
 					font.draw(sb, String.valueOf(tile.isGreen()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 15);
+					font.draw(sb, String.valueOf(tile.isCheckable()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 45);
 					
 					if(tile.piece != null) font.draw(sb, String.valueOf(tile.piece.isSelected()), tilePos.x * TILE_WIDTH, BOARD_HEIGHT - tilePos.y * TILE_HEIGHT - 30);
 					font.draw(sb, "Turn: " + (getTurn() ? "White" : "Black"), 550, 50);
@@ -167,4 +170,19 @@ public class Board implements IGameObject {
 		}
 	}
 
+	public void setCheck(boolean check) {
+		this.check = check;
+	}
+
+	public boolean isCheck() {
+		return check;
+	}
+
+	public void setCheckWhite(boolean checkWhite) {
+		this.checkWhite = checkWhite;
+	}
+
+	public boolean isCheckWhite() {
+		return checkWhite;
+	}
 }

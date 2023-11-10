@@ -138,9 +138,21 @@ public class MainMenuScreen implements Screen {
 		Gdx.input.setInputProcessor(stage);
 	}
 
+	private void update(float delta) {
+		System.out.println("HELLO");
+		if(Gdx.input.isKeyPressed(Keys.ALT_LEFT)) {
+			if (Gdx.input.isKeyJustPressed(Keys.H)) {
+				ServerData.setAddress("http://localhost:3131");
+				GlobalSettings.multiplayer = true;
+				game.setScreen(new PlayScreen(game));
+			}
+		}
+	}
+
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
+		update(delta);
 		ScreenUtils.clear(0, 0, 0, 0);
 
 		game.sb.begin();

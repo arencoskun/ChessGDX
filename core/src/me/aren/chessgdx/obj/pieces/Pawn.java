@@ -31,6 +31,8 @@ public class Pawn implements IPiece {
 	LinkedBlockingQueue<Tile> validPositions;
 	boolean hasMoved = false;
 	private int moveCount = 0;
+	long lastMove = 0;
+	long moveCooldown = 200;
 	
 	
 	public Pawn(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
@@ -63,9 +65,9 @@ public class Pawn implements IPiece {
 			
 			if(!hasMoved) {
 				if(white && y - 1 > 0) {
-					if(!board.tiles[y - 1][x].doesHavePiece()) getValidPositions().add(board.tiles[y - 1][x]);
+					if(!board.tiles[y - 1][x].doesHavePiece() && !board.tiles[y][x].doesHavePiece()) getValidPositions().add(board.tiles[y - 1][x]);
 				} else if(y + 1 < 8) {
-					if(!board.tiles[y + 1][x].doesHavePiece()) getValidPositions().add(board.tiles[y + 1][x]);
+					if(!board.tiles[y + 1][x].doesHavePiece() && !board.tiles[y][x].doesHavePiece()) getValidPositions().add(board.tiles[y + 1][x]);
 				}
 			}
 			
@@ -75,7 +77,7 @@ public class Pawn implements IPiece {
 				if (board.tiles[currentY][x - 1].getPiece() instanceof Pawn) {
 					Pawn pawn = (Pawn) board.tiles[currentY][x - 1].getPiece();
 
-					if (pawn.getMoveCount() == 1) {
+					if (pawn.getMoveCount() == 1 && pawn.isWhite() != white) {
 						if(pawn.isWhite()) {
 							board.tiles[currentY + 1][x - 1].setEnPassantable(true);
 							if(GlobalSettings.multiplayer) {
@@ -272,7 +274,6 @@ public class Pawn implements IPiece {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("PAWN MOVE COUNT: " + moveCount);
 
 		if(isCaptured()) {
 			getParent().removePiece();
@@ -290,7 +291,22 @@ public class Pawn implements IPiece {
 	public void afterTurnChange(boolean newTurn) {
 		// TODO Auto-generated method stub
 	}
-	
+
+	@Override
+	public long getLastMoveTime() {
+		return lastMove;
+	}
+
+	@Override
+	public void setLastMoveTime(long lastMoveTime) {
+		this.lastMove = lastMoveTime;
+	}
+
+	@Override
+	public long getMoveCooldown() {
+		return moveCooldown;
+	}
+
 	public int getMoveCount() {
 		return moveCount;
 	}

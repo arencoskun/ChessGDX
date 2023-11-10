@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -30,6 +29,8 @@ public class Bishop implements IPiece {
 	int limitXBottomR = 8;
 	int limitXTopL = 0;
 	int limitXBottomL = 0;
+	long lastMove = 0;
+	long moveCooldown = 200;
 	
 	public Bishop(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
 		// TODO Auto-generated constructor stub
@@ -302,5 +303,20 @@ public class Bishop implements IPiece {
 		limitXBottomR = 8;
 		limitXTopL = 0;
 		limitXBottomL = 0;
+	}
+
+	@Override
+	public long getLastMoveTime() {
+		return lastMove;
+	}
+
+	@Override
+	public void setLastMoveTime(long lastMoveTime) {
+		this.lastMove = lastMoveTime;
+	}
+
+	@Override
+	public long getMoveCooldown() {
+		return moveCooldown;
 	}
 }

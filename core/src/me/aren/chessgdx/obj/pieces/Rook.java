@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -27,6 +26,8 @@ public class Rook implements IPiece {
 	boolean captured = false;
 	Board board;
 	LinkedBlockingQueue<Tile> validPositions;
+	long lastMove = 0;
+	long moveCooldown = 200;
 	
 	
 	public Rook(SpriteBatch sb, OrthographicCamera cam, Board board, boolean white) {
@@ -235,6 +236,19 @@ public class Rook implements IPiece {
 	public void afterTurnChange(boolean newTurn) {
 		// TODO Auto-generated method stub
 	}
-	
 
+	@Override
+	public long getLastMoveTime() {
+		return lastMove;
+	}
+
+	@Override
+	public void setLastMoveTime(long lastMoveTime) {
+		this.lastMove = lastMoveTime;
+	}
+
+	@Override
+	public long getMoveCooldown() {
+		return moveCooldown;
+	}
 }

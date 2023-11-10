@@ -10,6 +10,7 @@ import com.kotcrab.vis.ui.widget.VisDialog;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import me.aren.chessgdx.obj.Tile;
+import me.aren.chessgdx.obj.pieces.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,10 +31,6 @@ import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.net.ServerData;
 import me.aren.chessgdx.net.handlers.PlayerIDHandler;
 import me.aren.chessgdx.obj.Board;
-import me.aren.chessgdx.obj.pieces.Bishop;
-import me.aren.chessgdx.obj.pieces.Pawn;
-import me.aren.chessgdx.obj.pieces.Queen;
-import me.aren.chessgdx.obj.pieces.Rook;
 
 public class PlayScreen implements Screen {
 	// TODO: Remove this
@@ -49,7 +46,7 @@ public class PlayScreen implements Screen {
 	PlayerIDHandler idHandler;
 
 	long currentTime = 0;
-	long serverTimeout = 500;
+	long serverTimeout = 2000;
 	long lastServerConnectAttempt = 0;
 	long lastServerSync = 0;
 	long syncTime = 300;
@@ -90,8 +87,7 @@ public class PlayScreen implements Screen {
 			board.tiles[6][i].addPiece(new Pawn(sb, cam, board, true));
 		}
 		
-		board.tiles[4][2].addPiece(new Pawn(sb, cam, board, false));
-		board.tiles[3][2].addPiece(new Pawn(sb, cam, board, true));
+		//board.tiles[4][2].addPiece(new Knight(sb, cam, board, false));
 		
 		board.tiles[0][7].addPiece(new Rook(sb, cam, board, false));
 		board.tiles[0][0].addPiece(new Rook(sb, cam, board, false));
@@ -106,6 +102,17 @@ public class PlayScreen implements Screen {
 		
 		board.tiles[7][3].addPiece(new Queen(sb, cam, board, true));
 		board.tiles[0][3].addPiece(new Queen(sb, cam, board, false));
+
+		board.tiles[7][1].addPiece(new Knight(sb, cam, board, true));
+		board.tiles[7][6].addPiece(new Knight(sb, cam, board, true));
+
+		board.tiles[0][1].addPiece(new Knight(sb, cam, board, false));
+		board.tiles[0][6].addPiece(new Knight(sb, cam, board, false));
+
+		board.tiles[7][4].addPiece(new King(sb, cam, board, true));
+		board.tiles[0][4].addPiece(new King(sb, cam, board, false));
+
+		board.tiles[3][4].addPiece(new King(sb, cam, board, false));
 
 		startTime = System.currentTimeMillis();
 	}
@@ -184,6 +191,7 @@ public class PlayScreen implements Screen {
 			@Override
 			public void call(Object... args) {
 				ServerData.setRoomFull(true);
+				showInfoMessage();
 				System.out.println("ROOM FULL");
 			}
 		}).on("player-left", new Emitter.Listener() {
@@ -214,7 +222,6 @@ public class PlayScreen implements Screen {
 			public void call(Object... args) {
 				if(ServerData.isRoomFull()) {
 					VisCheckBox disableBtn = new VisCheckBox("Disable this message");
-					VisTextButton okBtn = new VisTextButton("OK");
 					VisLabel label = new VisLabel("It is now your turn.");
 					VisDialog dialog = new VisDialog("", "dialog") {
 						public void result(Object obj) {
@@ -262,7 +269,33 @@ public class PlayScreen implements Screen {
 
 		lastServerConnectAttempt = System.currentTimeMillis();
 	}
-	
+
+	private void showInfoMessage() {
+		if(GlobalSettings.multiplayer && (ServerData.getPlayerID() == 1 || ServerData.getPlayerID() == 2)) {
+			VisDialog dialog = new VisDialog("", "dialog") {
+				public void result(Object obj) {
+					if ((Boolean) obj) {
+						close();
+					}
+				}
+			};
+
+			dialog.text("You are player" + (ServerData.getPlayerID() == 1 ? "WHITE." : "BLACK."));
+			dialog.getContentTable().row();
+			if (ServerData.getPlayerID() == 1) {
+				dialog.text("You move first, while the other player waits for your move.");
+			} else {
+				dialog.text("You wait for the WHITE player to move first, and then you will be able to make your move.");
+			}
+			dialog.button("OK", true);
+			dialog.key(Keys.ENTER, true);
+			dialog.addCloseButton();
+			dialog.closeOnEscape();
+			dialog.setCenterOnAdd(true);
+			dialog.show(stage);
+		}
+	}
+
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(stage);

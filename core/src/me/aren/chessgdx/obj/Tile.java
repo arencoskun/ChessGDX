@@ -17,7 +17,9 @@ public class Tile implements IGameObject {
 	boolean white;
 	boolean capturable = false;
 	boolean enPassantable = false;
+	boolean checkable = false;
 	private boolean green = false;
+	private boolean red = false;
 	private Vector2 pos;
 	Texture tileTexture;
 	IPiece piece;
@@ -42,6 +44,8 @@ public class Tile implements IGameObject {
 		
 		if(isGreen()) {
 			tileSb.setColor(Color.LIME);
+		} else if(isRed()) {
+			tileSb.setColor(Color.RED);
 		} else {
 			tileSb.setColor(Color.WHITE);
 		}
@@ -98,11 +102,25 @@ public class Tile implements IGameObject {
 	public void setGreen(boolean green) {
 		
 		if(GlobalSettings.debugModeEnabled) {
-			Gdx.app.log("DEBUG", "Tile: " + String.valueOf(this) + " Green set to: " + String.valueOf(green));
+			Gdx.app.log("DEBUG", "Tile: " + this + " Green set to: " + green);
 		}
 		
 		this.green = green;
 	}
+
+	public boolean isRed() {
+		return red;
+	}
+
+	public void setRed(boolean red) {
+
+		if(GlobalSettings.debugModeEnabled) {
+			Gdx.app.log("DEBUG", "Tile: " + this + " Red set to: " + green);
+		}
+
+		this.red = red;
+	}
+
 	
 	public boolean doesHavePiece() {
 		return piece != null;
@@ -130,5 +148,14 @@ public class Tile implements IGameObject {
 
 	public boolean isEnPassantable() {
 		return enPassantable;
+	}
+
+	public void setCheckable(boolean checkable) {
+		this.checkable = checkable;
+		System.out.println("Set checkable " + checkable);
+	}
+
+	public boolean isCheckable() {
+		return checkable;
 	}
 }
