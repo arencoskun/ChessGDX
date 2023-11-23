@@ -64,7 +64,6 @@ public class MainMenuScreen implements Screen {
 				submitButton.addListener(new ClickListener() {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
-						System.out.println(textField.getText());
 						String text = textField.getText().trim().toLowerCase();
 						if(!text.isEmpty()) {
 							if(text.contains("https://")) {
@@ -83,7 +82,6 @@ public class MainMenuScreen implements Screen {
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
 						VisCheckBox visCheckBox = (VisCheckBox) event.getListenerActor();
-						System.out.println(visCheckBox.isChecked());
 						https = visCheckBox.isChecked();
 					}
 				});
@@ -96,8 +94,6 @@ public class MainMenuScreen implements Screen {
 
 				dialog.addCloseButton();
 				dialog.show(stage);
-
-				System.out.println(textField.getText());
 			}
 		});
 		addButton("Exit").addListener(new ClickListener() {
@@ -139,7 +135,6 @@ public class MainMenuScreen implements Screen {
 	}
 
 	private void update(float delta) {
-		System.out.println("HELLO");
 		if(Gdx.input.isKeyPressed(Keys.ALT_LEFT)) {
 			if (Gdx.input.isKeyJustPressed(Keys.H)) {
 				ServerData.setAddress("http://localhost:3131");

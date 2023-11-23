@@ -180,6 +180,18 @@ public class Bishop implements IPiece {
 				Gdx.app.log("DEBUG", "Limit X Top L: " + limitXTopL);
 			}*/
 		}
+
+		for(Tile validPosition : getValidPositions()) {
+			if(validPosition.doesHavePiece() && validPosition.getPiece() instanceof King) {
+				King king = (King) validPosition.getPiece();
+
+				if(king.isWhite() != isWhite()) {
+					validPosition.setCheckable(true);
+				}
+			} else {
+				validPosition.setCheckable(false);
+			}
+		}
 	}
 
 	@Override

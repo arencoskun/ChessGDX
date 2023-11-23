@@ -192,7 +192,6 @@ public class PlayScreen implements Screen {
 			public void call(Object... args) {
 				ServerData.setRoomFull(true);
 				showInfoMessage();
-				System.out.println("ROOM FULL");
 			}
 		}).on("player-left", new Emitter.Listener() {
 			
@@ -235,7 +234,6 @@ public class PlayScreen implements Screen {
 						@Override
 						public void changed(ChangeEvent event, Actor actor) {
 							VisCheckBox visCheckBox = (VisCheckBox) event.getListenerActor();
-							System.out.println(visCheckBox.isChecked());
 							showTurnMessage = !visCheckBox.isChecked();
 						}
 					});

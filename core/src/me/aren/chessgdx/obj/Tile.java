@@ -152,7 +152,7 @@ public class Tile implements IGameObject {
 
 	public void setCheckable(boolean checkable) {
 		this.checkable = checkable;
-		System.out.println("Set checkable " + checkable);
+		setRed(checkable);
 	}
 
 	public boolean isCheckable() {

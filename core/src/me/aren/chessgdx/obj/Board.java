@@ -9,15 +9,10 @@ import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.net.ServerData;
 import me.aren.chessgdx.obj.interfaces.IGameObject;
 import me.aren.chessgdx.obj.interfaces.IPiece;
-import me.aren.chessgdx.obj.pieces.Bishop;
 import me.aren.chessgdx.obj.pieces.Pawn;
-import me.aren.chessgdx.obj.pieces.Queen;
-import me.aren.chessgdx.obj.pieces.Rook;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Objects;
 
 public class Board implements IGameObject {
 	
@@ -35,7 +30,6 @@ public class Board implements IGameObject {
 	public LinkedList<IPiece> capturedPiecesWhite = new LinkedList<IPiece>();
 	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
 	private OrthographicCamera cam;
-	private boolean check;
 	private boolean checkWhite;
 	
 	public Vector2 findIndexOfTile(Tile tileToSearch) {	
@@ -170,16 +164,25 @@ public class Board implements IGameObject {
 		}
 	}
 
-	public void setCheck(boolean check) {
-		this.check = check;
+	public void clearCheckableTiles() {
+		for(Tile[] tileArr : tiles) {
+			for(Tile tile : tileArr) {
+				if(tile.isCheckable()) tile.setCheckable(false);
+			}
+		}
 	}
 
-	public boolean isCheck() {
-		return check;
-	}
+	public boolean isInCheck() {
+		for(Tile[] tileArray : tiles) {
+			for(Tile tile : tileArray) {
+				if(tile.isCheckable()) {
+					checkWhite = tile.getPiece().isWhite();
+					return true;
+				}
+			}
+		}
 
-	public void setCheckWhite(boolean checkWhite) {
-		this.checkWhite = checkWhite;
+		return false;
 	}
 
 	public boolean isCheckWhite() {

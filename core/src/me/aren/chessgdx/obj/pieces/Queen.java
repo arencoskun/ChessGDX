@@ -211,6 +211,18 @@ public class Queen implements IPiece {
 				}
 			}
 		}
+
+		for(Tile validPosition : getValidPositions()) {
+			if(validPosition.doesHavePiece() && validPosition.getPiece() instanceof King) {
+				King king = (King) validPosition.getPiece();
+
+				if(king.isWhite() != isWhite()) {
+					validPosition.setCheckable(true);
+				}
+			} else {
+				validPosition.setCheckable(false);
+			}
+		}
 	}
 
 	@Override

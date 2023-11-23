@@ -156,10 +156,10 @@ public class King implements IPiece {
     public void afterMove() {
         // TODO Auto-generated method stub
 
+        board.clearCheckableTiles();
+
         if(isCaptured()) {
             getParent().removePiece();
-            getParent().setCheckable(false);
-            getParent().setRed(false);
             setParent(null);
         }
     }

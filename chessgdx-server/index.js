@@ -1,11 +1,20 @@
+const { exit } = require('process');
+
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-const port = 3131;
 let connectedClients = 0;
 const maxClients = 2;
 let currentTurn = 1;
+
+var argv = require('minimist')(process.argv.slice(2));
+
+if(argv.port == undefined || argv.port == "") {
+    console.log("The port must be specified using the port argument. (--port=1234)");
+    exit(1);
+}
+const port = argv.port;
 
 server.listen(port, function() {
     console.log("Server running on port " + port);
