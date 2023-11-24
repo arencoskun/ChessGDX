@@ -21,7 +21,7 @@ public class ServerOutputPipe implements Runnable {
         while (true) {
             try {
                 if ((line = reader.readLine()) == null) {
-                    System.out.println("IM GONE");
+                    System.out.println("The BufferedReader can no longer get input - the server is most probably closed.");
                     break;
                 }
             } catch (IOException e) {
@@ -29,6 +29,7 @@ public class ServerOutputPipe implements Runnable {
             }
             outputTextArea.append(line);
             outputTextArea.append("\n");
+            outputTextArea.setCaretPosition(outputTextArea.getText().length());
         }
     }
 

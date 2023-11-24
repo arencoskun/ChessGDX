@@ -53,22 +53,27 @@ io.on('connection', function(socket) {
     });
 
     socket.on('get-turn', function() {
+        //console.log('Got turn, updating all clients...');
         socket.emit('receive-turn', { turn: currentTurn });
     });
 
     socket.on('movement', (arg) => {
+        console.log('Got movement, telling clients to update their boards...');
         socket.broadcast.emit('update-board', arg);
     });
 
     socket.on('tile-set-enpassantable', (arg) => {
+        console.log('Got tile set enpassantable, telling clients to update...');
         socket.broadcast.emit('tile-receive-enpassantable', { x: arg.x, y: arg.y, enpassantable: arg.enpassantable });
     });
 
     socket.on('pawn-move-count', (arg) => {
+        console.log('Got change in pawn move count, telling clients to update...');
         socket.broadcast.emit('pawn-change-move-count', { x: arg.x, y: arg.y, moveCount: arg.moveCount });
     });
 
     socket.on('piece-captured', (arg) => {
+        console.log('Got captured piece, telling clients to update...');
         socket.broadcast.emit('update-board-captured', arg);
     });
 

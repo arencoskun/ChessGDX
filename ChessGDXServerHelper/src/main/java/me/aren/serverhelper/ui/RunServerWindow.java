@@ -117,26 +117,28 @@ public class RunServerWindow {
                     }
                 });
 
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
 
                 serverOutputTextArea.append("--- SERVER STARTED " + dtf.format(now) + " ---\n");
                 serverThread.start();
                 stopButton.setEnabled(true);
                 startButton.setEnabled(false);
+                serverOutputTextArea.setCaretPosition(serverOutputTextArea.getText().length());
             }
         });
 
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
 
                 serverOutputTextArea.append("--- SERVER STOPPED " + dtf.format(now) + " ---\n");
                 destroyNode();
                 stopButton.setEnabled(false);
                 startButton.setEnabled(true);
+                serverOutputTextArea.setCaretPosition(serverOutputTextArea.getText().length());
             }
         });
 
@@ -178,7 +180,7 @@ public class RunServerWindow {
         ProcessBuilder pb = new ProcessBuilder("taskkill", "/F", "/IM", "node.exe");
         try {
             pb.start();
-            System.out.println("DESTROYING NODE");
+            System.out.println("Killing NodeJS...");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
