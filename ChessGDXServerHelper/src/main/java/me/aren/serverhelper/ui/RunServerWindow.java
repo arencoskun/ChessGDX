@@ -3,6 +3,7 @@ package me.aren.serverhelper.ui;
 import me.aren.serverhelper.backend.ServerRunner;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +12,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.prefs.Preferences;
 
 public class RunServerWindow {
     /*
@@ -20,13 +22,31 @@ public class RunServerWindow {
                         serverOutputTextArea);
      */
     Thread serverThread;
+    Preferences pathPrefs;
     public RunServerWindow() throws IOException, InterruptedException {
+        pathPrefs = Preferences.userRoot().node("ChessGDXServerHelper");
         JFrame frame = new JFrame("ChessGDX Server Helper");
         JPanel panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        JPanel nodePanel = new JPanel();
+        JPanel serverExecutablePanel = new JPanel();
+        nodePanel.setLayout(new BoxLayout(nodePanel, BoxLayout.LINE_AXIS));
+        serverExecutablePanel.setLayout(new BoxLayout(serverExecutablePanel, BoxLayout.LINE_AXIS));
         JLabel nodePathLabel = new JLabel("NodeJS executable:");
         JTextField nodePathTextField = new JTextField();
+        JFileChooser nodeChooser = new JFileChooser();
+        nodeChooser.setDialogTitle("Select NodeJS executable");
+        nodeChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        nodeChooser.setFileFilter(new FileNameExtensionFilter("*.exe", "exe"));
+        nodeChooser.setAcceptAllFileFilterUsed(false);
+        JFileChooser serverChooser = new JFileChooser();
+        serverChooser.setDialogTitle("Select server main file");
+        serverChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        serverChooser.setFileFilter(new FileNameExtensionFilter("*.js", "js"));
+        serverChooser.setAcceptAllFileFilterUsed(false);
+        JButton nodeBrowseButton = new JButton("Browse");
+        JButton serverBrowseButton = new JButton("Browse");
         JLabel serverPathLabel = new JLabel("Server executable:");
         JTextField serverPathTextField = new JTextField();
         JLabel portLabel = new JLabel("Port number:");
@@ -39,18 +59,25 @@ public class RunServerWindow {
         JScrollPane scroll = new JScrollPane (serverOutputTextArea,
         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        panel.setPreferredSize(new Dimension(300, 120));
+        nodePathTextField.setText(pathPrefs.get("nodejs-path", ""));
+        serverPathTextField.setText(pathPrefs.get("server-path", ""));
+        portTextField.setText(String.valueOf(pathPrefs.getInt("port", 1234)));
+
+        panel.setPreferredSize(new Dimension(300, 125));
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         panel.add(nodePathLabel);
-        panel.add(nodePathTextField);
+        nodePanel.add(nodePathTextField);
+        nodePanel.add(nodeBrowseButton);
+        panel.add(nodePanel);
         panel.add(serverPathLabel);
-        panel.add(serverPathTextField);
+        serverExecutablePanel.add(serverPathTextField);
+        serverExecutablePanel.add(serverBrowseButton);
+        panel.add(serverExecutablePanel);
         panel.add(portLabel);
         panel.add(portTextField);
         panel.add(Box.createRigidArea(new Dimension(0, 5)));
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
-        buttonPanel.add(Box.createRigidArea(new Dimension(130, 0)));
         buttonPanel.add(startButton);
         buttonPanel.add(stopButton);
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -70,6 +97,9 @@ public class RunServerWindow {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                pathPrefs.put("nodejs-path", nodePathTextField.getText());
+                pathPrefs.put("server-path", serverPathTextField.getText());
+                pathPrefs.putInt("port", Integer.parseInt(portTextField.getText()));
                 ServerRunner serverRunner = new ServerRunner(nodePathTextField.getText(),
                         serverPathTextField.getText(),
                         Integer.parseInt(portTextField.getText()),
@@ -107,6 +137,30 @@ public class RunServerWindow {
                 destroyNode();
                 stopButton.setEnabled(false);
                 startButton.setEnabled(true);
+            }
+        });
+
+
+
+        nodeBrowseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = nodeChooser.showOpenDialog(frame);
+
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    nodePathTextField.setText(nodeChooser.getSelectedFile().getPath());
+                }
+            }
+        });
+
+        serverBrowseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = serverChooser.showOpenDialog(frame);
+
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    serverPathTextField.setText(serverChooser.getSelectedFile().getPath());
+                }
             }
         });
 
