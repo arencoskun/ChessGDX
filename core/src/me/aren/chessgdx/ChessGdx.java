@@ -3,6 +3,7 @@ package me.aren.chessgdx;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import com.kotcrab.vis.ui.VisUI;
 import me.aren.chessgdx.screens.MainMenuScreen;
 
 public class ChessGdx extends Game {
@@ -23,5 +24,8 @@ public class ChessGdx extends Game {
 	public void dispose () {
 		super.dispose();
 		sb.dispose();
+		VisUI.dispose(true);
+		// Done to make sure the program actually exits
+		System.exit(0);
 	}
 }

@@ -59,5 +59,6 @@ project(":core") {
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.kotcrab.vis:vis-ui:$visuiVersion"
+        api 'io.socket:socket.io-client:2.1.0'
     }
 }
