@@ -1,6 +1,6 @@
 **WARNING**:
 
-This branch is totally **useless**. It will no longer receive any updates and is not deleted for archiving purposes.
+This branch is totally **useless**. It will no longer receive any updates nor be merged at **any point**, and is not deleted for archiving purposes.
 
 **What happened?**
 
