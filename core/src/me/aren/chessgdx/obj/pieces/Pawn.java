@@ -55,8 +55,8 @@ public class Pawn implements IPiece {
 				getValidPositions().remove(tile);
 			}
 		}
-			
-		int y = white ? (int)(board.findIndexOfTile(parent).y - 1) : (int)(board.findIndexOfTile(parent).y + 1);
+		int movementFactor = GlobalSettings.boardReversed ? (white ? -1 : 1) : (white ? 1 : -1);
+		int y = white ? (int)(board.findIndexOfTile(parent).y - movementFactor) : (int)(board.findIndexOfTile(parent).y + movementFactor);
 		int currentY = (int)(board.findIndexOfTile(parent).y);
 		int x = (int) board.findIndexOfTile(parent).x;
 		

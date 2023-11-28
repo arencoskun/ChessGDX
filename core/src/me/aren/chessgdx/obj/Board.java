@@ -1,5 +1,7 @@
 package me.aren.chessgdx.obj;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,8 +13,7 @@ import me.aren.chessgdx.obj.interfaces.IGameObject;
 import me.aren.chessgdx.obj.interfaces.IPiece;
 import me.aren.chessgdx.obj.pieces.Pawn;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Board implements IGameObject {
 	
@@ -31,6 +32,8 @@ public class Board implements IGameObject {
 	public LinkedList<IPiece> capturedPiecesBlack = new LinkedList<IPiece>();
 	private OrthographicCamera cam;
 	private boolean checkWhite;
+	private boolean reversed;
+	private int playerID;
 	
 	public Vector2 findIndexOfTile(Tile tileToSearch) {	
 		for(int y = 0; y < 8; y++) {
@@ -58,9 +61,40 @@ public class Board implements IGameObject {
 		}
 	}
 
+	public void reverseBoard() {
+		Tile[][] newTiles = new Tile[8][8];
+		for(int x = 0; x < 768; x += 96) {
+			for(int y = 768 - 96; y >= 0; y -= 96) {
+				newTiles[((BOARD_HEIGHT - TILE_HEIGHT) - y) / TILE_HEIGHT][x / TILE_WIDTH] =
+						new Tile((x / TILE_WIDTH + ((BOARD_HEIGHT - TILE_HEIGHT) - y) / TILE_HEIGHT) % 2 != 0, new Vector2(x, y));
+			}
+		}
+
+		for(Tile[] tileArray : tiles) {
+			for(Tile tile : tileArray) {
+				if(tile.doesHavePiece()) {
+					IPiece piece;
+					piece = tile.getPiece();
+					tile.removePiece();
+
+					newTiles[(int) (7 - tile.getPosBoard().y)][(int) tile.getPosBoard().x].addPiece(piece);
+				}
+			}
+		}
+
+		tiles = newTiles;
+	}
+
 	@Override
 	public void update(float delta) {
 		// TODO Auto-generated method stub
+
+		if(playerID == 0) playerID = ServerData.getPlayerID();
+		if(playerID == 2 & !reversed) {
+			reverseBoard();
+			reversed = true;
+			GlobalSettings.boardReversed = true;
+		}
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import io.socket.client.Socket;
 public abstract class GlobalSettings {
 	public static boolean debugModeEnabled = false;
 	public static boolean multiplayer = false;
+	public static boolean boardReversed = false;
 	
 	private static Socket socket;
 	

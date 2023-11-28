@@ -1,5 +1,8 @@
 package me.aren.chessgdx.obj.interfaces;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import me.aren.chessgdx.obj.pieces.King;
@@ -91,6 +94,7 @@ public interface IPiece extends IGameObject {
 									movementData.put("originalY", originalPos.y);
 									movementData.put("targetX", targetPos.x);
 									movementData.put("targetY", targetPos.y);
+									movementData.put("sender", ServerData.getPlayerID());
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();

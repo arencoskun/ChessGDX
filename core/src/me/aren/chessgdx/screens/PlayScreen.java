@@ -278,7 +278,7 @@ public class PlayScreen implements Screen {
 				}
 			};
 
-			dialog.text("You are player" + (ServerData.getPlayerID() == 1 ? "WHITE." : "BLACK."));
+			dialog.text("You are player " + (ServerData.getPlayerID() == 1 ? "WHITE." : "BLACK."));
 			dialog.getContentTable().row();
 			if (ServerData.getPlayerID() == 1) {
 				dialog.text("You move first, while the other player waits for your move.");
@@ -300,6 +300,7 @@ public class PlayScreen implements Screen {
 	}
 	
 	private void update(float delta) {
+		board.update(delta);
 		ServerData.setShowingMessage(stage.getActors().size > 0);
 		if(GlobalSettings.multiplayer) {
 			if(waitingDialog == null) {
