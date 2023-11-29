@@ -105,7 +105,7 @@ public class Tile implements IGameObject {
 			Gdx.app.log("DEBUG", "Tile: " + this + " Green set to: " + green);
 		}
 		
-		this.green = green;
+		if(this.green != green) this.green = green;
 	}
 
 	public boolean isRed() {
@@ -118,7 +118,7 @@ public class Tile implements IGameObject {
 			Gdx.app.log("DEBUG", "Tile: " + this + " Red set to: " + green);
 		}
 
-		this.red = red;
+		if(this.red != red) this.red = red;
 	}
 
 	
@@ -151,8 +151,10 @@ public class Tile implements IGameObject {
 	}
 
 	public void setCheckable(boolean checkable) {
-		this.checkable = checkable;
-		setRed(checkable);
+		if(this.checkable != checkable) {
+			this.checkable = checkable;
+			setRed(checkable);
+		}
 	}
 
 	public boolean isCheckable() {

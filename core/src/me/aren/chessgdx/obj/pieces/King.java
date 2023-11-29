@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import me.aren.chessgdx.GlobalSettings;
 import me.aren.chessgdx.obj.Board;
 import me.aren.chessgdx.obj.Tile;
 import me.aren.chessgdx.obj.interfaces.IPiece;
@@ -44,6 +45,7 @@ public class King implements IPiece {
     @Override
     public void calculateValidPositions(Board board) {
         // TODO Auto-generated method stub
+
         if(!getValidPositions().isEmpty()) {
             for(Tile tile : getValidPositions()) {
                 getValidPositions().remove(tile);

@@ -176,13 +176,17 @@ public class Board implements IGameObject {
 		for(Tile[] tileArray : tiles) {
 			for(Tile tile : tileArray) {
 				if(tile.isCheckable()) {
-					checkWhite = tile.getPiece().isWhite();
+					//checkWhite = tile.getPiece().isWhite();
 					return true;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	public void setCheckWhite(boolean white) {
+		if (this.checkWhite != white) this.checkWhite = white;
 	}
 
 	public boolean isCheckWhite() {

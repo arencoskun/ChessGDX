@@ -54,6 +54,7 @@ public interface IPiece extends IGameObject {
 							setSelected(true);
 						}
 					}
+
 					// --------------- DEBUG
 			    	if(GlobalSettings.debugModeEnabled) {
 			        	Gdx.app.log("DEBUG", isWhite() ? "White " + getName() + " selected at " + "X: " + getParent().getPos().x / 96 + " Y: " + (7 - getParent().getPos().y / 96) 
