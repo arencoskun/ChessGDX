@@ -60,6 +60,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y - 1][x - 2].doesHavePiece()) {
                      if(board.tiles[y - 1][x - 2].isPieceWhite() != white) {
                          getValidPositions().add(board.tiles[y - 1][x - 2]);
+                         board.tiles[y - 1][x - 2].setCapturable(true);
                      }
                 } else {
                     getValidPositions().add(board.tiles[y - 1][x - 2]);
@@ -70,6 +71,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y + 1][x - 2].doesHavePiece()) {
                     if(board.tiles[y + 1][x - 2].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y + 1][x - 2]);
+                        board.tiles[y + 1][x - 2].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y + 1][x - 2]);
@@ -82,6 +84,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y - 2][x - 1].doesHavePiece()) {
                     if(board.tiles[y - 2][x - 1].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y - 2][x - 1]);
+                        board.tiles[y - 2][x - 1].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y - 2][x - 1]);
@@ -92,6 +95,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y + 2][x - 1].doesHavePiece()) {
                     if(board.tiles[y + 2][x - 1].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y + 2][x - 1]);
+                        board.tiles[y + 2][x - 1].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y + 2][x - 1]);
@@ -104,6 +108,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y - 2][x + 1].doesHavePiece()) {
                     if(board.tiles[y - 2][x + 1].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y - 2][x + 1]);
+                        board.tiles[y - 2][x + 1].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y - 2][x + 1]);
@@ -114,6 +119,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y + 2][x + 1].doesHavePiece()) {
                     if(board.tiles[y + 2][x + 1].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y + 2][x + 1]);
+                        board.tiles[y + 2][x + 1].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y + 2][x + 1]);
@@ -126,6 +132,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y - 1][x + 2].doesHavePiece()) {
                     if(board.tiles[y - 1][x + 2].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y - 1][x + 2]);
+                        board.tiles[y - 1][x + 2].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y - 1][x + 2]);
@@ -136,6 +143,7 @@ public class Knight implements IPiece {
                 if(board.tiles[y + 1][x + 2].doesHavePiece()) {
                     if(board.tiles[y + 1][x + 2].isPieceWhite() != white) {
                         getValidPositions().add(board.tiles[y + 1][x + 2]);
+                        board.tiles[y + 1][x + 2].setCapturable(true);
                     }
                 } else {
                     getValidPositions().add(board.tiles[y + 1][x + 2]);
@@ -149,6 +157,7 @@ public class Knight implements IPiece {
 
                 if(king.isWhite() != isWhite()) {
                     validPosition.setCheckable(true);
+                    board.setCheckWhite(king.isWhite());
                 }
             } else {
                 validPosition.setCheckable(false);

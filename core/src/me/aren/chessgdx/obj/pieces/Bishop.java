@@ -187,6 +187,7 @@ public class Bishop implements IPiece {
 
 				if(king.isWhite() != isWhite()) {
 					validPosition.setCheckable(true);
+					board.setCheckWhite(king.isWhite());
 				}
 			} else {
 				validPosition.setCheckable(false);
