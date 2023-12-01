@@ -23,7 +23,9 @@ public class RunServerWindow {
      */
     Thread serverThread;
     Preferences pathPrefs;
+    String osName;
     public RunServerWindow() throws IOException, InterruptedException {
+        osName = System.getProperty("os.name").toLowerCase();
         pathPrefs = Preferences.userRoot().node("ChessGDXServerHelper");
         JFrame frame = new JFrame("ChessGDX Server Helper");
         JPanel panel = new JPanel();
@@ -38,8 +40,10 @@ public class RunServerWindow {
         JFileChooser nodeChooser = new JFileChooser();
         nodeChooser.setDialogTitle("Select NodeJS executable");
         nodeChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        nodeChooser.setFileFilter(new FileNameExtensionFilter("*.exe", "exe"));
-        nodeChooser.setAcceptAllFileFilterUsed(false);
+        if(osName.contains("windows")) {
+            nodeChooser.setFileFilter(new FileNameExtensionFilter("*.exe", "exe"));
+            nodeChooser.setAcceptAllFileFilterUsed(false);
+        }
         JFileChooser serverChooser = new JFileChooser();
         serverChooser.setDialogTitle("Select server main file");
         serverChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -142,8 +146,6 @@ public class RunServerWindow {
             }
         });
 
-
-
         nodeBrowseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -177,14 +179,19 @@ public class RunServerWindow {
     }
 
     private void destroyNode() {
-        ProcessBuilder pb = new ProcessBuilder("taskkill", "/F", "/IM", "node.exe");
+        ProcessBuilder pb = new ProcessBuilder();
+        if(osName.contains("windows")) {
+            pb = new ProcessBuilder("taskkill", "/F", "/IM", "node.exe");
+        } else if(osName.contains("mac")) {
+            pb = new ProcessBuilder("pkill", "node");
+        }
+
         try {
             pb.start();
             System.out.println("Killing NodeJS...");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-
 
     }
 }
