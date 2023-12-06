@@ -32,6 +32,8 @@ import me.aren.chessgdx.net.ServerData;
 import me.aren.chessgdx.net.handlers.PlayerIDHandler;
 import me.aren.chessgdx.obj.Board;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class PlayScreen implements Screen {
 	// TODO: Remove this
 	ChessGdx game;

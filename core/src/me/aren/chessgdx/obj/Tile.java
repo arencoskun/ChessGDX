@@ -102,7 +102,7 @@ public class Tile implements IGameObject {
 	public void setGreen(boolean green) {
 		
 		if(GlobalSettings.debugModeEnabled) {
-			Gdx.app.log("DEBUG", "Tile: " + this + " Green set to: " + green);
+			Gdx.app.log("DEBUG", "Tile: " + getPosBoard().x + ", " + getPosBoard().y + " Green set to: " + green);
 		}
 		
 		if(this.green != green) this.green = green;
