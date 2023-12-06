@@ -234,8 +234,8 @@ public interface IPiece extends IGameObject {
 	void setValidPositionsCalculated(boolean calculated);
 	boolean isWhite();
 	void calculateValidPositions(Board board);
-
 	default LinkedBlockingQueue<Tile> calculateValidPositions(Board board, int x, int y) {
+		if(x < 0 || x > 7 || y < 0 || y > 7) return calculateValidPositions(board, 0, 0);
 		Tile originalTile = getParent();
 		setParent(board.tiles[y][x]);
 		calculateValidPositions(board);
