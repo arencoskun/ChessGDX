@@ -61,13 +61,49 @@ public class King implements IPiece {
             for(int iX = x - 1; iX <= x + 1; iX++) {
                 if(iY > -1 && iY < 8 && iX > -1 && iX < 8) {
                     if((board.tiles[iY][iX].doesHavePiece() && board.tiles[iY][iX].isPieceWhite() != white) ||
-                        !board.tiles[iY][iX].doesHavePiece()) getValidPositions().add(board.tiles[iY][iX]);
+                        !board.tiles[iY][iX].doesHavePiece() && !calculateValidPositions(board, sb, cam, this, iX, iY).isEmpty()) {
+                        getValidPositions().add(board.tiles[iY][iX]);
+                    }
+                    if((board.tiles[iY][iX].doesHavePiece() && board.tiles[iY][iX].isPieceWhite() != white) && !calculateValidPositions(board, sb, cam, this, iX, iY).isEmpty()) {
+                        board.tiles[iY][iX].setCapturable(true);
+                    }
+                }
+            }
+        }
+
+        for(Tile tile : calculateValidPositions(board, sb, cam, this, 4, 3)) {
+            Gdx.app.log("DEBUG", "Tile x: " + tile.getPosBoard().x + " Tile y: " + tile.getPosBoard().y);
+        }
+    }
+
+    @Override
+    public LinkedBlockingQueue<Tile> getValidPosSafe() {
+        if(!getValidPositions().isEmpty()) {
+            for(Tile tile : getValidPositions()) {
+                getValidPositions().remove(tile);
+            }
+        }
+
+        if(parent == null) return new LinkedBlockingQueue<Tile>();
+
+        int x = (int) parent.getPosBoard().x;
+        int y = (int) parent.getPosBoard().y;
+
+        for(int iY = y - 1; iY <= y + 1; iY++) {
+            for(int iX = x - 1; iX <= x + 1; iX++) {
+                if(iY > -1 && iY < 8 && iX > -1 && iX < 8) {
+                    if((board.tiles[iY][iX].doesHavePiece() && board.tiles[iY][iX].isPieceWhite() != white) ||
+                            !board.tiles[iY][iX].doesHavePiece()) {
+                        getValidPositions().add(board.tiles[iY][iX]);
+                    }
                     if((board.tiles[iY][iX].doesHavePiece() && board.tiles[iY][iX].isPieceWhite() != white)) {
                         board.tiles[iY][iX].setCapturable(true);
                     }
                 }
             }
         }
+
+        return getValidPositions();
     }
 
     @Override

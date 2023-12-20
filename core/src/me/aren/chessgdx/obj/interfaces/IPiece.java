@@ -2,7 +2,9 @@ package me.aren.chessgdx.obj.interfaces;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import me.aren.chessgdx.obj.pieces.King;
+import me.aren.chessgdx.obj.pieces.Pawn;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -234,13 +236,35 @@ public interface IPiece extends IGameObject {
 	void setValidPositionsCalculated(boolean calculated);
 	boolean isWhite();
 	void calculateValidPositions(Board board);
-	default LinkedBlockingQueue<Tile> calculateValidPositions(Board board, int x, int y) {
-		if(x < 0 || x > 7 || y < 0 || y > 7) return calculateValidPositions(board, 0, 0);
-		Tile originalTile = getParent();
-		setParent(board.tiles[y][x]);
-		calculateValidPositions(board);
-		LinkedBlockingQueue<Tile> validPos = getValidPositions();
-		setParent(originalTile);
+	default LinkedBlockingQueue<Tile> getValidPosSafe() {return new LinkedBlockingQueue<Tile>();}
+	default LinkedBlockingQueue<Tile> calculateValidPositions(Board board, SpriteBatch sb, OrthographicCamera cam, IPiece me, int x, int y) {
+		if(x < 0 || x > 7 || y < 0 || y > 7) return calculateValidPositions(board, sb, cam, me, 0, 0);
+		IPiece originalPiece = null;
+		if(board.tiles[y][x].doesHavePiece()) {
+			originalPiece = board.tiles[y][x].getPiece();
+			board.tiles[y][x].removePiece();
+		}
+		IPiece newPiece;
+		// TODO: FINISH
+		switch (me.getName()) {
+			case "king":
+				newPiece = new King(sb, cam, board, me.isWhite());
+				board.tiles[y][x].addPiece(newPiece);
+				break;
+			default:
+				newPiece = new Pawn(sb, cam, board, me.isWhite());
+				board.tiles[y][x].addPiece(newPiece);
+				break;
+		}
+
+		LinkedBlockingQueue<Tile> validPos = newPiece.getValidPosSafe();
+
+		if(originalPiece != null) {
+			board.tiles[y][x].removePiece();
+			board.tiles[y][x].addPiece(originalPiece);
+		} else {
+			board.tiles[y][x].removePiece();
+		}
 		return validPos;
 	}
 
