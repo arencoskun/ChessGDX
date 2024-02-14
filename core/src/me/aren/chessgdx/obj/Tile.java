@@ -115,7 +115,7 @@ public class Tile implements IGameObject {
 	public void setRed(boolean red) {
 
 		if(GlobalSettings.debugModeEnabled) {
-			Gdx.app.log("DEBUG", "Tile: " + this + " Red set to: " + green);
+			//Gdx.app.log("DEBUG", "Tile: " + this + " Red set to: " + green);
 		}
 
 		this.red = red;

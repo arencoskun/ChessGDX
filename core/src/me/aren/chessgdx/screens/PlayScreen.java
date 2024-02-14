@@ -378,6 +378,8 @@ public class PlayScreen implements Screen {
 				font.setColor(Color.GREEN);
 				font.draw(sb, "Multiplayer ID: " + playerID, 550, 75);
 			}
+			font.draw(sb, "Check white: " + board.isCheckWhite(), 550, 200);
+			font.draw(sb, "Check: " + board.isInCheck(), 550, 300);
 		}
 		sb.end();
 

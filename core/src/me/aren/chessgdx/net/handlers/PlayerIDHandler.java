@@ -25,7 +25,7 @@ public class PlayerIDHandler implements Emitter.Listener {
 		try {
 			playerID = data.getString("id");
 			this.playerID = playerID;
-			ServerData.setPlayerID(Integer.valueOf(playerID));
+			ServerData.setPlayerID(Integer.parseInt(playerID));
 			Gdx.app.log("SocketIO", "ID: " + playerID);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
